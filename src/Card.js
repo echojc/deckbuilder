@@ -2,15 +2,21 @@
 
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import './Card.css';
 
 import type { CardData } from './scry';
 import type { GlobalState } from './state';
 
 type Props = CardData & {};
 
-const Card = ({ name, image_uris }: Props) =>
+    //<img src="image_uris" width="200" height="280" />
+const Card = ({ name, mana_cost, type_line, oracle_text, power, toughness }: Props) =>
   <div className="Card">
-    <img src="image_uris" width="200" height="280" />
+    <div>{name}</div>
+    <div>{mana_cost}</div>
+    <div>{type_line}</div>
+    <div>{oracle_text}</div>
+    <div>{power}/{toughness}</div>
   </div>
 ;
 

@@ -17,3 +17,7 @@ declare module 'redux' {
 declare module 'react-redux' {
   declare module.exports: any;
 }
+
+declare module 'redux-saga' {
+  declare module.exports: any;
+}
