@@ -1,11 +1,9 @@
 // @flow
 
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import './Card.css';
 
 import type { CardData } from './scry';
-import type { GlobalState } from './state';
 
 type Props = CardData & {};
 
@@ -20,8 +18,4 @@ const Card = ({ name, mana_cost, type_line, oracle_text, power, toughness, image
   </div>
 ;
 
-export default connect(
-  (state: GlobalState, props: Props) => ({
-    ...(state.cardCache[props.name] || {}),
-  }),
-)(Card);
+export default Card;

@@ -2,22 +2,24 @@
 
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { filteredPoolCards } from './selector';
 import Card from './Card';
 import './Pool.css';
 import type { GlobalState } from './state';
+import type { CardData } from './scry';
 
 type Props = {
-  pool: string[],
+  filteredPool: CardData[],
 };
 
-const Pool = ({ pool }: Props) =>
+const Pool = ({ filteredPool }: Props) =>
   <div className="Pool">
-    {pool.map(name => <Card key={name} name={name} />)}
+    {filteredPool.map(card => <Card key={card.name} {...card} />)}
   </div>
 ;
 
 export default connect(
   (state: GlobalState) => ({
-    pool: state.pool,
+    filteredPool: filteredPoolCards(state),
   }),
 )(Pool);
