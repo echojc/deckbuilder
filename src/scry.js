@@ -17,8 +17,8 @@ export type CardData = {
   },
 };
 
-//const base = 'https://api.scryfall.com';
-const base = 'http://localhost:8080';
+const base = 'https://api.scryfall.com';
+//const base = 'http://localhost:8080';
 
 export async function autocomplete(partial: string): Promise<string[]> {
   if (!partial || partial.length < 3) return [];

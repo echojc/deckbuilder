@@ -1,0 +1,15 @@
+{
+  "name": "test3",
+  "mana_cost": "{U}{1}",
+  "cmc": 2,
+  "type_line": "Creature",
+  "oracle_text": "{T}: Destroy target creature.",
+  "power": "2",
+  "toughness": "1",
+  "colors": "{U}",
+  "rarity": "common",
+  "image_uris": {
+    "small": "http://localhost/",
+    "normal": "http://localhost/"
+  }
+}

@@ -4,6 +4,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Card from './Card';
 import './Pool.css';
+import type { GlobalState } from './state';
 
 type Props = {
   pool: string[],
@@ -20,4 +21,3 @@ export default connect(
     pool: state.pool,
   }),
 )(Pool);
-

@@ -4,7 +4,7 @@ import { takeEvery, select, put } from 'redux-saga/effects';
 import { cacheCard } from './state';
 import * as scry from './scry';
 
-function* ensureCached(action) {
+function* ensureCached(action): any {
   const { name } = action;
   const existing = yield select(_ => _.cardCache[name]);
   if (existing) {
@@ -22,6 +22,6 @@ function* ensureCached(action) {
   }
 }
 
-export default function*() {
+export default function*(): any {
   yield takeEvery(['ADD_CARD_TO_POOL'], ensureCached);
 }

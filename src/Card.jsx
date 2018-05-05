@@ -9,20 +9,19 @@ import type { GlobalState } from './state';
 
 type Props = CardData & {};
 
-    //<img src="image_uris" width="200" height="280" />
-const Card = ({ name, mana_cost, type_line, oracle_text, power, toughness }: Props) =>
+const Card = ({ name, mana_cost, type_line, oracle_text, power, toughness, image_uris }: Props) =>
   <div className="Card">
     <div>{name}</div>
     <div>{mana_cost}</div>
     <div>{type_line}</div>
     <div>{oracle_text}</div>
     <div>{power}/{toughness}</div>
+    <img className="Card-art" src={image_uris && image_uris.small} />
   </div>
 ;
 
 export default connect(
   (state: GlobalState, props: Props) => ({
-    // TODO reselect
     ...(state.cardCache[props.name] || {}),
   }),
 )(Card);

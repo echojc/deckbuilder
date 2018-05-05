@@ -21,3 +21,11 @@ declare module 'react-redux' {
 declare module 'redux-saga' {
   declare module.exports: any;
 }
+
+declare module 'redux-saga/effects' {
+  declare module.exports: any;
+}
+
+declare module 'reselect' {
+  declare module.exports: any;
+}
