@@ -6,7 +6,7 @@ import { filteredPoolCards } from './selector';
 import Card from './Card';
 import './Pool.css';
 import type { GlobalState } from './state';
-import type { CardData } from './scry';
+import type { CardData } from './saga';
 
 type Props = {
   filteredPool: CardData[],

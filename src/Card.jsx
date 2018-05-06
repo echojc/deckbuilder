@@ -3,18 +3,20 @@
 import React, { Component } from 'react';
 import './Card.css';
 
-import type { CardData } from './scry';
+import type { CardData } from './saga';
 
-type Props = CardData & {};
+type Props = $Shape<CardData> & {
+  name: string,
+};
 
-const Card = ({ name, mana_cost, type_line, oracle_text, power, toughness, image_uris }: Props) =>
+const Card = ({ name, manaCost, typeLine, oracleText, power, toughness, imageUris }: Props) =>
   <div className="Card">
     <div>{name}</div>
-    <div>{mana_cost}</div>
-    <div>{type_line}</div>
-    <div>{oracle_text}</div>
+    <div>{manaCost}</div>
+    <div>{typeLine}</div>
+    <div>{oracleText}</div>
     <div>{power}/{toughness}</div>
-    <img className="Card-art" src={image_uris && image_uris.small} />
+    <img className="Card-art" src={imageUris && imageUris.small} />
   </div>
 ;
 

@@ -1,6 +1,6 @@
 // @flow
 
-import type { CardData } from './scry';
+import type { CardData } from './saga';
 import update from 'immutability-helper';
 
 export type Filters = {
