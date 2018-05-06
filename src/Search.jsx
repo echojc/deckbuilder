@@ -39,6 +39,7 @@ class Search extends Component<Props, State> {
   render() {
     return (
       <div className="Search">
+        Search:
         <input
           list="list"
           value={this.state.searchValue}

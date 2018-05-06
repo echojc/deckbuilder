@@ -14,7 +14,10 @@ type Props = {
 
 const Pool = ({ filteredPool }: Props) =>
   <div className="Pool">
-    {filteredPool.map(card => <Card key={card.name} {...card} />)}
+    Pool:
+    <div className="Pool-cards">
+      {filteredPool.map(card => <Card key={card.name} {...card} />)}
+    </div>
   </div>
 ;
 

@@ -1,4 +1,8 @@
-.Pool {
+.Pool-cards {
   display: flex;
   flex-wrap: wrap;
+  align-content: flex-start;
+  height: 500px;
+  border: 1px solid black;
+  overflow: auto;
 }
