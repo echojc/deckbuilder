@@ -6,17 +6,17 @@ import { filteredPoolCards } from './selector';
 import Card from './Card';
 import './Pool.css';
 import type { GlobalState } from './state';
-import type { CardData } from './saga';
+import type { CardDataInstance } from './selector';
 
 type Props = {
-  filteredPool: CardData[],
+  filteredPool: CardDataInstance[],
 };
 
 const Pool = ({ filteredPool }: Props) =>
   <div className="Pool">
     Pool:
     <div className="Pool-cards">
-      {filteredPool.map(card => <Card key={card.name} {...card} />)}
+      {filteredPool.map(card => <Card key={card.instanceId} {...card.card} />)}
     </div>
   </div>
 ;

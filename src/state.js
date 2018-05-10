@@ -1,41 +1,97 @@
 // @flow
 
-import type { CardData } from './saga';
 import update from 'immutability-helper';
+import uuidv4 from 'uuid/v4';
+
+import type { CardData } from './saga';
 
 export type Filters = {
   cmc?: number,
 };
 
+export type CardInstance = {
+  instanceId: string,
+  cardName: string,
+};
+
+function newCardInstance(name: string): CardInstance {
+  return {
+    instanceId: uuidv4(),
+    cardName: name,
+  };
+}
+
+export type Deck = {
+  id: string,
+  name: string,
+  cards: CardInstance[],
+};
+
+function newDeck(id?: string = uuidv4(), name?: string = 'new deck'): Deck {
+  return {
+    id,
+    name,
+    cards: [],
+  };
+}
+
+export type Pool = {
+  id: string,
+  name: string,
+  cards: CardInstance[],
+  decks: { [id: string]: Deck },
+};
+
+function newPool(id?: string = uuidv4(), name?: string = 'new pool'): Pool {
+  return {
+    id,
+    name,
+    cards: [],
+    decks: {
+      default: newDeck('default'),
+    },
+  };
+}
+
 export type GlobalState = {
-  pool: string[],
+  currentPoolId: string,
+  currentDeckId: string,
   cardCache: { [name: string]: $Shape<CardData> },
   filters: Filters,
+  pools: { [id: string]: Pool },
 };
 
-const defaultState = {
-  pool: [],
+const defaultState: GlobalState = {
+  currentPoolId: 'default',
+  currentDeckId: 'default',
   cardCache: {},
   filters: {},
+  pools: {
+    default: newPool('default'),
+  },
 };
 
-type AddCardToPool = { type: 'ADD_CARD_TO_POOL', name: string };
-export const addCardToPool = (name: string): AddCardToPool => ({ type: 'ADD_CARD_TO_POOL', name });
+export type AddCardToPool = { type: 'ADD_CARD_TO_POOL', cardName: string };
+export const addCardToPool = (cardName: string): AddCardToPool => ({ type: 'ADD_CARD_TO_POOL', cardName });
 
-type CacheCard = { type: 'CACHE_CARD', name: string, cardData: ?$Shape<CardData> };
-export const cacheCard = (name: string, cardData: ?$Shape<CardData>): CacheCard => ({ type: 'CACHE_CARD', name, cardData });
+export type CacheCard = { type: 'CACHE_CARD', cardName: string, cardData: ?$Shape<CardData> };
+export const cacheCard = (cardName: string, cardData: ?$Shape<CardData>): CacheCard => ({ type: 'CACHE_CARD', cardName, cardData });
 
-type SetFilters = { type: 'SET_FILTERS', filters: Filters };
+export type SetFilters = { type: 'SET_FILTERS', filters: Filters };
 export const setFilters = (filters: Filters): SetFilters => ({ type: 'SET_FILTERS', filters });
 
-type Action = AddCardToPool | CacheCard | SetFilters;
+export type Action = AddCardToPool | CacheCard | SetFilters;
 export default (state: GlobalState = defaultState, action: Action): GlobalState => {
   switch (action.type) {
     case 'ADD_CARD_TO_POOL': return update(state, {
-      pool: { $push: [action.name] },
+      pools: {
+        [state.currentPoolId]: {
+          cards: { $push: [newCardInstance(action.cardName)] },
+        }
+      },
     });
     case 'CACHE_CARD': return update(state, {
-      cardCache: { $merge: { [action.name]: action.cardData } },
+      cardCache: { $merge: { [action.cardName]: action.cardData } },
     });
     case 'SET_FILTERS': return update(state, {
       filters: { $merge: { ...action.filters } },

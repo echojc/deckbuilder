@@ -3,6 +3,7 @@
 import { takeEvery, select, put, call } from 'redux-saga/effects';
 import { cacheCard } from './state';
 import * as scry from './scry';
+import type { CacheCard } from './state';
 
 export type CardData = {
   _version: number,
@@ -44,33 +45,36 @@ function extractCardData(card: any): CardData {
   };
 }
 
-function* ensureCached(localStorage, action): any {
-  const { name } = action;
-  const existing = yield select(_ => _.cardCache[name]);
+function* ensureCached(localStorage, action: CacheCard): any {
+  const { cardName } = action;
+  const existing = yield select(_ => _.cardCache[cardName]);
   if (existing && existing._version === CACHE_VERSION) {
     return;
   }
 
   // check local storage first
   try {
-    const storedData = yield call([localStorage, 'getItem'], name);
+    const storedData = yield call([localStorage, 'getItem'], cardName);
     const cardData = JSON.parse(storedData);
     if (cardData && cardData._version === CACHE_VERSION) {
-      yield put(cacheCard(name, cardData));
+      yield put(cacheCard(cardName, cardData));
       return;
     }
-  } catch (e) {}
+  } catch (e) {
+    console.error(e);
+  }
 
   // not available in local storage, download from scryfall
   try {
     // placeholder for loading
-    yield put(cacheCard(name, { name }));
-    const cardData = extractCardData(yield scry.named(name));
+    yield put(cacheCard(cardName, { name: cardName }));
+    const cardData = extractCardData(yield scry.named(cardName));
     // save to local storage for future
-    yield call([localStorage, 'setItem'], name, JSON.stringify(cardData));
-    yield put(cacheCard(name, cardData));
+    yield call([localStorage, 'setItem'], cardName, JSON.stringify(cardData));
+    yield put(cacheCard(cardName, cardData));
   } catch (e) {
-    yield put(cacheCard(name, null));
+    console.error(e);
+    yield put(cacheCard(cardName, null));
   }
 }
 

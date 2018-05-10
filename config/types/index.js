@@ -29,3 +29,7 @@ declare module 'redux-saga/effects' {
 declare module 'reselect' {
   declare module.exports: any;
 }
+
+declare module 'uuid/v4' {
+  declare module.exports: any;
+}

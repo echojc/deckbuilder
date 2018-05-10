@@ -2,14 +2,14 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
-import { poolCmcs } from './selector';
+import { poolCardsCmcs } from './selector';
 import { setFilters } from './state';
 import type { GlobalState, Filters } from './state';
 
 type Props = {
   setFilters: (filters: Filters) => void,
   filters: Filters,
-  poolCmcs: number[],
+  poolCardsCmcs: number[],
 };
 
 function renderSelect(options: any[], selected: any, onSelect: (v?: string) => void): React$Node {
@@ -30,17 +30,17 @@ function numberify(f: (v?: number) => void): (v?: string) => void {
   return (v?: string) => v ? f(parseInt(v, 10)) : f();
 }
 
-const Filter = ({ setFilters, filters, poolCmcs }: Props) =>
+const Filter = ({ setFilters, filters, poolCardsCmcs }: Props) =>
   <div className="Filter">
     Filters:
-    CMC {renderSelect(['any', ...poolCmcs], filters.cmc, numberify(cmc => setFilters({ cmc })))}
+    CMC {renderSelect(['any', ...poolCardsCmcs], filters.cmc, numberify(cmc => setFilters({ cmc })))}
   </div>
 ;
 
 export default connect(
   (state: GlobalState) => ({
     filters: state.filters,
-    poolCmcs: poolCmcs(state),
+    poolCardsCmcs: poolCardsCmcs(state),
   }),
   (dispatch) => ({
     setFilters: (filters: Filters) => dispatch(setFilters(filters)),

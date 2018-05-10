@@ -1,15 +1,24 @@
 // @flow
 
 import { createSelector } from 'reselect';
+import type { CardData } from './saga';
 //import type { GlobalState } from './state';
 
-const pool = state => state.pool;
+const pool = state => state.pools[state.currentPoolId] || {};
 const cardCache = state => state.cardCache;
 const filters = state => state.filters;
 
+export type CardDataInstance = {
+  instanceId: string,
+  card: CardData,
+};
+
 export const poolCards = createSelector(
   [pool, cardCache],
-  (pool, cardCache) => pool.map(name => cardCache[name] || {}),
+  (pool, cardCache) => (pool.cards || []).map(instance => ({
+    instanceId: instance.instanceId,
+    card: cardCache[instance.cardName] || { name: instance.cardName },
+  }))
 );
 
 export const filteredPoolCards = createSelector(
@@ -23,7 +32,7 @@ export const filteredPoolCards = createSelector(
   },
 );
 
-export const poolCmcs = createSelector(
+export const poolCardsCmcs = createSelector(
   [poolCards],
   (poolCards) => {
     const cmcs = {};
