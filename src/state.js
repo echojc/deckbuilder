@@ -9,18 +9,6 @@ export type Filters = {
   cmc?: number,
 };
 
-export type CardInstance = {
-  instanceId: string,
-  cardName: string,
-};
-
-function newCardInstance(name: string): CardInstance {
-  return {
-    instanceId: uuidv4(),
-    cardName: name,
-  };
-}
-
 export type Deck = {
   id: string,
   name: string,
@@ -38,7 +26,7 @@ function newDeck(id?: string = uuidv4(), name?: string = 'new deck'): Deck {
 export type Pool = {
   id: string,
   name: string,
-  cards: CardInstance[],
+  cards: { [instanceId: string]: string }, // instanceId -> cardName
   decks: { [id: string]: Deck },
 };
 
@@ -46,7 +34,7 @@ function newPool(id?: string = uuidv4(), name?: string = 'new pool'): Pool {
   return {
     id,
     name,
-    cards: [],
+    cards: {},
     decks: {
       default: newDeck('default'),
     },
@@ -89,7 +77,7 @@ export default (state: GlobalState = defaultState, action: Action): GlobalState 
     case 'ADD_CARD_TO_POOL': return update(state, {
       pools: {
         [state.currentPoolId]: {
-          cards: { $push: [newCardInstance(action.cardName)] },
+          cards: { $merge: { [uuidv4()]: action.cardName } },
         },
       },
     });

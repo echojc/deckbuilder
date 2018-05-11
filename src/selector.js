@@ -29,15 +29,15 @@ export const deckCards = createSelector(
   [deck, pool, cardCache],
   (deck, pool, cardCache) => (deck.cardInstanceIds || []).map(instanceId => ({
     instanceId,
-    card: cardCache[((pool.cards || []).find(_ => _.instanceId === instanceId) || {}).cardName] || { name: 'oops something broke' },
+    card: cardCache[(pool.cards || {})[instanceId]] || {},
   }))
 );
 
 export const poolCards = createSelector(
   [pool, cardCache],
-  (pool, cardCache) => (pool.cards || []).map(instance => ({
-    instanceId: instance.instanceId,
-    card: cardCache[instance.cardName] || { name: instance.cardName },
+  (pool, cardCache) => Object.entries(pool.cards || {}).map(([instanceId, cardName]) => ({
+    instanceId,
+    card: cardCache[cardName] || { name: cardName },
   }))
 );
 
