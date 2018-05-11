@@ -12,14 +12,14 @@ export type Filters = {
 export type Deck = {
   id: string,
   name: string,
-  cardInstanceIds: string[],
+  cardInstanceIds: { [instanceId: string]: {} },
 };
 
 function newDeck(id?: string = uuidv4(), name?: string = 'new deck'): Deck {
   return {
     id,
     name,
-    cardInstanceIds: [],
+    cardInstanceIds: {},
   };
 }
 
@@ -86,7 +86,7 @@ export default (state: GlobalState = defaultState, action: Action): GlobalState 
         [state.currentPoolId]: {
           decks: {
             [state.currentDeckId]: {
-              cardInstanceIds: { $push: [action.instanceId] },
+              cardInstanceIds: { $merge: { [action.instanceId]: {} } },
             },
           },
         },
