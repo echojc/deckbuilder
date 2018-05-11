@@ -9,6 +9,13 @@ export type Filters = {
   cmc?: number,
 };
 
+export type SortBy = 'name' | 'cmc' | 'power' | 'toughness' | 'rarity';
+export type SortDirection = 'asc' | 'desc';
+export type Sort = {
+  by: SortBy,
+  direction: SortDirection,
+};
+
 export type Deck = {
   id: string,
   name: string,
@@ -46,6 +53,7 @@ export type GlobalState = {
   currentDeckId: string,
   cardCache: { [name: string]: $Shape<CardData> },
   filters: Filters,
+  sorting: Sort,
   pools: { [id: string]: Pool },
 };
 
@@ -54,6 +62,10 @@ const defaultState: GlobalState = {
   currentDeckId: 'default',
   cardCache: {},
   filters: {},
+  sorting: {
+    by: 'name',
+    direction: 'asc',
+  },
   pools: {
     default: newPool('default'),
   },
@@ -73,6 +85,9 @@ export const cacheCard = (cardName: string, cardData: ?$Shape<CardData>): CacheC
 
 export type SetFilters = { type: 'SET_FILTERS', filters: Filters };
 export const setFilters = (filters: Filters): SetFilters => ({ type: 'SET_FILTERS', filters });
+
+export type SetSorting = { type: 'SET_SORTING', by: SortBy, direction: SortDirection };
+export const setSorting = (by: SortBy, direction: SortDirection): SetSorting => ({ type: 'SET_SORTING', by, direction });
 
 export type Action = AddCardToPool | AddCardInstanceToDeck | RemoveCardInstanceFromDeck | CacheCard | SetFilters;
 export default (state: GlobalState = defaultState, action: Action): GlobalState => {
@@ -111,6 +126,12 @@ export default (state: GlobalState = defaultState, action: Action): GlobalState 
     });
     case 'SET_FILTERS': return update(state, {
       filters: { $merge: { ...action.filters } },
+    });
+    case 'SET_SORTING': return update(state, {
+      sorting: {
+        by: { $set: action.by },
+        direction: { $set: action.direction },
+      },
     });
     default: return state;
   }

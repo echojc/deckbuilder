@@ -9,6 +9,7 @@ const currentPoolId = state => state.currentPoolId;
 const currentDeckId = state => state.currentDeckId;
 const cardCache = state => state.cardCache;
 const filters = state => state.filters;
+const sorting = state => state.sorting;
 
 const pool = createSelector(
   [pools, currentPoolId],
@@ -44,22 +45,50 @@ export const poolCards = createSelector(
       }))
 );
 
+const rarityOrder = {
+  common: 0,
+  uncommon: 10,
+  rare: 20,
+  mythic: 30,
+};
+const sortingFuncs = {
+  name: {
+    asc: (a, b) => a.card.name.localeCompare(b.card.name),
+    desc: (a, b) => b.card.name.localeCompare(a.card.name),
+  },
+  cmc: {
+    asc: (a, b) => a.card.cmc - b.card.cmc,
+    desc: (a, b) => b.card.cmc - a.card.cmc,
+  },
+  power: {
+    asc: (a, b) => a.card.power - b.card.power,
+    desc: (a, b) => b.card.power - a.card.power,
+  },
+  toughness: {
+    asc: (a, b) => a.card.toughness - b.card.toughness,
+    desc: (a, b) => b.card.toughness - a.card.toughness,
+  },
+  rarity: {
+    asc: (a, b) => rarityOrder[a.card.rarity] - rarityOrder[b.card.rarity],
+    desc: (a, b) => rarityOrder[b.card.rarity] - rarityOrder[a.card.rarity],
+  },
+};
 export const filteredPoolCards = createSelector(
-  [poolCards, filters],
-  (poolCards, filters) => {
-    let cards = poolCards;
+  [poolCards, filters, sorting],
+  (poolCards, filters, sorting) => {
+    let cards = poolCards.slice();
     if (filters.cmc != null) {
-      cards = cards.filter(_ => _.cmc === filters.cmc);
+      cards = cards.filter(_ => _.card.cmc === filters.cmc);
     }
-    return cards;
+    return cards.sort(sortingFuncs[sorting.by][sorting.direction]);
   },
 );
 
 export const poolCardsCmcs = createSelector(
   [poolCards],
   (poolCards) => {
-    const cmcs = {};
-    poolCards.forEach(_ => cmcs[_.cmc] = true);
-    return Object.keys(cmcs).sort();
+    const result = {};
+    poolCards.forEach(_ => result[_.card.cmc] = true);
+    return Object.keys(result).sort();
   },
 );
