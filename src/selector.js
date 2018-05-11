@@ -26,10 +26,10 @@ export type CardDataInstance = {
 };
 
 export const deckCards = createSelector(
-  [deck, cardCache],
-  (deck, cardCache) => (deck.cards || []).map(instance => ({
-    instanceId: instance.instanceId,
-    card: cardCache[instance.cardName] || { name: instance.cardName },
+  [deck, pool, cardCache],
+  (deck, pool, cardCache) => (deck.cardInstanceIds || []).map(instanceId => ({
+    instanceId,
+    card: cardCache[((pool.cards || []).find(_ => _.instanceId === instanceId) || {}).cardName] || { name: 'oops something broke' },
   }))
 );
 
