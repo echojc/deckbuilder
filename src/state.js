@@ -65,13 +65,16 @@ export const addCardToPool = (cardName: string): AddCardToPool => ({ type: 'ADD_
 export type AddCardInstanceToDeck = { type: 'ADD_CARD_INSTANCE_TO_DECK', instanceId: string };
 export const addCardInstanceToDeck = (instanceId: string): AddCardInstanceToDeck => ({ type: 'ADD_CARD_INSTANCE_TO_DECK', instanceId });
 
+export type RemoveCardInstanceFromDeck = { type: 'REMOVE_CARD_INSTANCE_FROM_DECK', instanceId: string };
+export const removeCardInstanceFromDeck = (instanceId: string): RemoveCardInstanceFromDeck => ({ type: 'REMOVE_CARD_INSTANCE_FROM_DECK', instanceId });
+
 export type CacheCard = { type: 'CACHE_CARD', cardName: string, cardData: ?$Shape<CardData> };
 export const cacheCard = (cardName: string, cardData: ?$Shape<CardData>): CacheCard => ({ type: 'CACHE_CARD', cardName, cardData });
 
 export type SetFilters = { type: 'SET_FILTERS', filters: Filters };
 export const setFilters = (filters: Filters): SetFilters => ({ type: 'SET_FILTERS', filters });
 
-export type Action = AddCardToPool | AddCardInstanceToDeck | CacheCard | SetFilters;
+export type Action = AddCardToPool | AddCardInstanceToDeck | RemoveCardInstanceFromDeck | CacheCard | SetFilters;
 export default (state: GlobalState = defaultState, action: Action): GlobalState => {
   switch (action.type) {
     case 'ADD_CARD_TO_POOL': return update(state, {
@@ -87,6 +90,17 @@ export default (state: GlobalState = defaultState, action: Action): GlobalState 
           decks: {
             [state.currentDeckId]: {
               cardInstanceIds: { $merge: { [action.instanceId]: {} } },
+            },
+          },
+        },
+      },
+    });
+    case 'REMOVE_CARD_INSTANCE_FROM_DECK': return update(state, {
+      pools: {
+        [state.currentPoolId]: {
+          decks: {
+            [state.currentDeckId]: {
+              cardInstanceIds: { $unset: [action.instanceId] },
             },
           },
         },
