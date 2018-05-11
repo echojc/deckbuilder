@@ -74,20 +74,34 @@ const defaultState: GlobalState = {
 export type AddCardToPool = { type: 'ADD_CARD_TO_POOL', cardName: string };
 export const addCardToPool = (cardName: string): AddCardToPool => ({ type: 'ADD_CARD_TO_POOL', cardName });
 
+export type AddCardToDeck = { type: 'ADD_CARD_TO_DECK', cardName: string };
+export const addCardToDeck = (cardName: string): AddCardToDeck => ({ type: 'ADD_CARD_TO_DECK', cardName });
+
 export type CacheCard = { type: 'CACHE_CARD', cardName: string, cardData: ?$Shape<CardData> };
 export const cacheCard = (cardName: string, cardData: ?$Shape<CardData>): CacheCard => ({ type: 'CACHE_CARD', cardName, cardData });
 
 export type SetFilters = { type: 'SET_FILTERS', filters: Filters };
 export const setFilters = (filters: Filters): SetFilters => ({ type: 'SET_FILTERS', filters });
 
-export type Action = AddCardToPool | CacheCard | SetFilters;
+export type Action = AddCardToPool | AddCardToDeck | CacheCard | SetFilters;
 export default (state: GlobalState = defaultState, action: Action): GlobalState => {
   switch (action.type) {
     case 'ADD_CARD_TO_POOL': return update(state, {
       pools: {
         [state.currentPoolId]: {
           cards: { $push: [newCardInstance(action.cardName)] },
-        }
+        },
+      },
+    });
+    case 'ADD_CARD_TO_DECK': return update(state, {
+      pools: {
+        [state.currentPoolId]: {
+          decks: {
+            [state.currentDeckId]: {
+              cards: { $push: [newCardInstance(action.cardName)] },
+            },
+          },
+        },
       },
     });
     case 'CACHE_CARD': return update(state, {

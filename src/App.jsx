@@ -5,6 +5,7 @@ import { hot } from 'react-hot-loader';
 import { connect } from 'react-redux';
 
 import Pool from './Pool';
+import Deck from './Deck';
 import Search from './Search';
 import Filter from './Filter';
 import Sorting from './Sorting';
@@ -16,6 +17,7 @@ const App = () =>
     <Filter />
     <Sorting />
     <Pool />
+    <Deck />
   </div>
 ;
 
