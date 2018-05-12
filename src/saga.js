@@ -184,14 +184,16 @@ function* saveState(localStorage): any {
 function* loadState(localStorage): any {
   try {
     const stateData = yield call([localStorage, 'getItem'], 'state');
-    const state = JSON.parse(stateData) || {};
-    yield put(mergeState(state));
+    const state = JSON.parse(stateData);
 
-    // load all card data from cache (or fetch online)
-    for (const poolId of Object.keys(state.pools)) {
-      const cards = state.pools[poolId].cards;
-      for (const instanceId of Object.keys(cards)) {
-        yield fork(fetchCard, localStorage, cards[instanceId]);
+    if (state) {
+      yield put(mergeState(state));
+      // load all card data from cache (or fetch online)
+      for (const poolId of Object.keys(state.pools)) {
+        const cards = state.pools[poolId].cards;
+        for (const instanceId of Object.keys(cards)) {
+          yield fork(fetchCard, localStorage, cards[instanceId]);
+        }
       }
     }
   } catch (e) {
