@@ -18,16 +18,18 @@ type State = {
 };
 
 class Search extends Component<Props, State> {
+  inputEl: ?HTMLInputElement;
+
   state = {
     searchValue: '',
   };
 
   searchOrSelect = (value) => {
+    this.setState({ searchValue: value });
     if (this.props.autocompleteResults.includes(value)) {
-      this.setState({ searchValue: '' });
       this.props.addCardToPool(value);
+      requestAnimationFrame(() => { this.inputEl && this.inputEl.select(); });
     } else {
-      this.setState({ searchValue: value });
       this.search(value);
     }
   };
@@ -39,9 +41,11 @@ class Search extends Component<Props, State> {
       <div className="Search">
         Search:
         <input
+          ref={e => this.inputEl = e}
           list="list"
           value={this.state.searchValue}
           onChange={e => this.searchOrSelect(e.target.value)}
+          onKeyPress={e => e.key === 'Enter' && this.searchOrSelect(this.state.searchValue)}
         />
         <datalist id="list">
           {this.props.autocompleteResults.map(n => <option key={n}>{n}</option>)}
