@@ -1,7 +1,7 @@
 // @flow
 
-import { takeEvery, select, put, call, all } from 'redux-saga/effects';
-import { autocompleteResult, cacheCard, setOffline } from './state';
+import { takeEvery, takeLatest, select, put, call, all, fork } from 'redux-saga/effects';
+import { autocompleteResult, cacheCard, setOffline, mergeState } from './state';
 import * as scry from './scry';
 import type { AutocompleteRequest, CacheCard } from './state';
 
@@ -45,13 +45,7 @@ function extractCardData(card: any): CardData {
   };
 }
 
-function* ensureCached(localStorage, action: CacheCard): any {
-  const { cardName } = action;
-  const existing = yield select(_ => _.cardCache[cardName]);
-  if (existing && existing._version === CACHE_VERSION) {
-    return;
-  }
-
+function* fetchCard(localStorage, cardName: string): any {
   // check local storage first
   try {
     const storedData = yield call([localStorage, 'getItem'], cardName);
@@ -96,6 +90,16 @@ function* ensureCached(localStorage, action: CacheCard): any {
       console.groupEnd();
     }
   }
+}
+
+function* ensureCached(localStorage, action: CacheCard): any {
+  const { cardName } = action;
+  const existing = yield select(_ => _.cardCache[cardName]);
+  if (existing && existing._version === CACHE_VERSION) {
+    return;
+  }
+
+  yield fork(fetchCard, localStorage, cardName);
 }
 
 function* autocomplete(localStorage, action: AutocompleteRequest): any {
@@ -166,9 +170,53 @@ function* autocomplete(localStorage, action: AutocompleteRequest): any {
   }
 }
 
+function* saveState(localStorage): any {
+  const state = yield select(_ => ({
+    currentPoolId: _.currentPoolId,
+    currentDeckId: _.currentDeckId,
+    filters: _.filters,
+    sorting: _.sorting,
+    pools: _.pools,
+  }));
+  yield call([localStorage, 'setItem'], 'state', JSON.stringify(state));
+}
+
+function* loadState(localStorage): any {
+  try {
+    const stateData = yield call([localStorage, 'getItem'], 'state');
+    const state = JSON.parse(stateData) || {};
+    yield put(mergeState(state));
+
+    // load all card data from cache (or fetch online)
+    for (const poolId of Object.keys(state.pools)) {
+      const cards = state.pools[poolId].cards;
+      for (const instanceId of Object.keys(cards)) {
+        yield fork(fetchCard, localStorage, cards[instanceId]);
+      }
+    }
+  } catch (e) {
+    console.group('loadState');
+    console.error(e);
+    console.groupEnd();
+  }
+};
+
 export default function*(): any {
   yield all([
     takeEvery(['ADD_CARD_TO_POOL'], ensureCached, window.localStorage),
-    takeEvery(['AUTOCOMPLETE_REQUEST'], autocomplete, window.localStorage),
+    takeLatest(['AUTOCOMPLETE_REQUEST'], autocomplete, window.localStorage),
+    takeEvery(['LOAD_STATE'], loadState, window.localStorage),
+    takeLatest([
+      'ADD_CARD_TO_POOL',
+      'REMOVE_CARD_INSTANCE_FROM_POOL',
+      'ADD_CARD_INSTANCE_TO_DECK',
+      'REMOVE_CARD_INSTANCE_FROM_DECK',
+      'CACHE_CARD',
+      'SET_FILTERS',
+      'SET_SORTING',
+      'SET_CURRENT_DECK',
+      'ADD_AND_SWITCH_TO_DECK',
+      'RENAME_DECK',
+    ], saveState, window.localStorage),
   ]);
 }

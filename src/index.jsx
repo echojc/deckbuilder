@@ -26,3 +26,4 @@ if (root) {
 }
 
 sagaMiddleware.run(saga);
+store.dispatch({ type: 'LOAD_STATE' });

@@ -75,6 +75,9 @@ const defaultState: GlobalState = {
   },
 };
 
+export type MergeState = { type: 'MERGE_STATE', state: $Shape<GlobalState> };
+export const mergeState = (state: $Shape<GlobalState>): MergeState => ({ type: 'MERGE_STATE', state });
+
 export type SetOffline = { type: 'SET_OFFLINE', isOffline: boolean };
 export const setOffline = (isOffline: boolean): SetOffline => ({ type: 'SET_OFFLINE', isOffline });
 
@@ -115,6 +118,7 @@ export type RenameDeck = { type: 'RENAME_DECK', id: string, newName: string };
 export const renameDeck = (id: string, newName: string): RenameDeck => ({ type: 'RENAME_DECK', id, newName });
 
 export type Action =
+  MergeState |
   SetOffline |
   AddCardToPool |
   RemoveCardInstanceFromPool |
@@ -130,6 +134,7 @@ export type Action =
   RenameDeck;
 export default (state: GlobalState = defaultState, action: Action): GlobalState => {
   switch (action.type) {
+    case 'MERGE_STATE': return update(state, { $merge: action.state });
     case 'SET_OFFLINE': {
       console.log('switching to', action.isOffline ? 'offline' : 'online', 'mode');
       return update(state, {
