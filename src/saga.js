@@ -99,10 +99,13 @@ function* ensureCached(localStorage, action: CacheCard): any {
 }
 
 function* autocomplete(localStorage, action: AutocompleteRequest): any {
-  // normalize to lower case for internal usage
+  // reset if request is too short
   if (!action.partial || action.partial.length < 2) {
+    yield put(autocompleteResult([]));
     return;
   }
+
+  // normalize to lower case for internal usage
   const partial = action.partial.toLowerCase();
 
   const isOffline = yield select(_ => _.isOffline);
@@ -118,14 +121,17 @@ function* autocomplete(localStorage, action: AutocompleteRequest): any {
       const groupedByInitialLetters = {};
       for (const name of results) {
         const initialLetters = name.slice(0, 2).toLowerCase();
-        const group = groupedByInitialLetters[initialLetters] || [];
-        groupedByInitialLetters[initialLetters] = group.push(name);
+        if (groupedByInitialLetters[initialLetters]) {
+          groupedByInitialLetters[initialLetters][name] = 0;
+        } else {
+          groupedByInitialLetters[initialLetters] = { [name]: 0 };
+        }
       }
       for (const initialLetters of Object.keys(groupedByInitialLetters)) {
         const keyName = `names/${initialLetters}`;
         // get existing card names and merge
-        const knownCards = JSON.parse(yield call([localStorage, 'getItem'], keyName)) || [];
-        const mergedCards = knownCards.concat(groupedByInitialLetters[initialLetters]).sort();
+        const knownCards = JSON.parse(yield call([localStorage, 'getItem'], keyName)) || {};
+        const mergedCards = { ...knownCards, ...groupedByInitialLetters[initialLetters] };
         yield call([localStorage, 'setItem'], keyName, JSON.stringify(mergedCards));
       }
     } catch (e) {
@@ -148,8 +154,8 @@ function* autocomplete(localStorage, action: AutocompleteRequest): any {
     try {
       const initialLetters = partial.slice(0, 2);
       const keyName = `names/${initialLetters}`;
-      const knownCards = JSON.parse(yield call([localStorage, 'getItem'], keyName)) || [];
-      const offlineResults = knownCards.filter(_ => _.toLowerCase().startsWith(partial));
+      const knownCards = JSON.parse(yield call([localStorage, 'getItem'], keyName)) || {};
+      const offlineResults = Object.keys(knownCards).filter(_ => _.toLowerCase().startsWith(partial));
       yield put(autocompleteResult(offlineResults));
     } catch (e) {
       console.group('autocomplete - retrieve known cards');
