@@ -81,6 +81,9 @@ export const setOffline = (isOffline: boolean): SetOffline => ({ type: 'SET_OFFL
 export type AddCardToPool = { type: 'ADD_CARD_TO_POOL', cardName: string };
 export const addCardToPool = (cardName: string): AddCardToPool => ({ type: 'ADD_CARD_TO_POOL', cardName });
 
+export type RemoveCardInstanceFromPool = { type: 'REMOVE_CARD_INSTANCE_FROM_POOL', instanceId: string };
+export const removeCardInstanceFromPool = (instanceId: string): RemoveCardInstanceFromPool => ({ type: 'REMOVE_CARD_INSTANCE_FROM_POOL', instanceId });
+
 export type AddCardInstanceToDeck = { type: 'ADD_CARD_INSTANCE_TO_DECK', instanceId: string };
 export const addCardInstanceToDeck = (instanceId: string): AddCardInstanceToDeck => ({ type: 'ADD_CARD_INSTANCE_TO_DECK', instanceId });
 
@@ -105,6 +108,7 @@ export const autocompleteResult = (results: string[]): AutocompleteResult => ({ 
 export type Action =
   SetOffline |
   AddCardToPool |
+  RemoveCardInstanceFromPool |
   AddCardInstanceToDeck |
   RemoveCardInstanceFromDeck |
   CacheCard |
@@ -124,6 +128,13 @@ export default (state: GlobalState = defaultState, action: Action): GlobalState 
       pools: {
         [state.currentPoolId]: {
           cards: { $merge: { [uuidv4()]: action.cardName } },
+        },
+      },
+    });
+    case 'REMOVE_CARD_INSTANCE_FROM_POOL': return update(state, {
+      pools: {
+        [state.currentPoolId]: {
+          cards: { $unset: [action.instanceId] },
         },
       },
     });

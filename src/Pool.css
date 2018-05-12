@@ -8,5 +8,39 @@
 }
 
 .Pool-card {
+  position: relative;
   cursor: pointer;
+}
+
+.Pool-card-delete {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2rem;
+  height: 2rem;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: none;
+}
+
+.Pool-card:hover .Pool-card-delete {
+  display: block;
+}
+
+.Pool-card-delete::before,
+.Pool-card-delete::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1rem;
+  height: 0.1rem;
+  background-color: #fff;
+}
+
+.Pool-card-delete::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.Pool-card-delete::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
 }
