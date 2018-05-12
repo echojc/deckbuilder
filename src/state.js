@@ -43,7 +43,7 @@ function newPool(id?: string = uuidv4(), name?: string = 'new pool'): Pool {
     name,
     cards: {},
     decks: {
-      default: newDeck('default'),
+      default: newDeck('default', 'default'),
     },
   };
 }
@@ -71,7 +71,7 @@ const defaultState: GlobalState = {
     direction: 'asc',
   },
   pools: {
-    default: newPool('default'),
+    default: newPool('default', 'default'),
   },
 };
 
