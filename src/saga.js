@@ -1,6 +1,6 @@
 // @flow
 
-import { takeEvery, takeLatest, select, put, call, all, fork } from 'redux-saga/effects';
+import { takeEvery, takeLatest, select, put, call, all, spawn } from 'redux-saga/effects';
 import { autocompleteResult, cacheCard, setOffline, mergeState } from './state';
 import * as scry from './scry';
 import type { AutocompleteRequest, CacheCard } from './state';
@@ -99,7 +99,7 @@ function* ensureCached(localStorage, action: CacheCard): any {
     return;
   }
 
-  yield fork(fetchCard, localStorage, cardName);
+  yield spawn(fetchCard, localStorage, cardName);
 }
 
 function* autocomplete(localStorage, action: AutocompleteRequest): any {
@@ -192,7 +192,7 @@ function* loadState(localStorage): any {
       for (const poolId of Object.keys(state.pools)) {
         const cards = state.pools[poolId].cards;
         for (const instanceId of Object.keys(cards)) {
-          yield fork(fetchCard, localStorage, cards[instanceId]);
+          yield spawn(fetchCard, localStorage, cards[instanceId]);
         }
       }
     }
@@ -205,7 +205,7 @@ function* loadState(localStorage): any {
 
 export default function*(): any {
   yield all([
-    takeEvery(['ADD_CARD_TO_POOL'], ensureCached, window.localStorage),
+    takeLatest(['ADD_CARD_TO_POOL'], ensureCached, window.localStorage),
     takeLatest(['AUTOCOMPLETE_REQUEST'], autocomplete, window.localStorage),
     takeEvery(['LOAD_STATE'], loadState, window.localStorage),
     takeLatest([
