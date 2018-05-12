@@ -1,2 +1,13 @@
 .App {
+  position: relative;
+}
+
+.App-offline {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #e10000;
+  color: #fff;
+  font-weight: bold;
+  padding: 0.25rem 0.5rem;
 }

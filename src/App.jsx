@@ -11,8 +11,15 @@ import Filter from './Filter';
 import Sorting from './Sorting';
 import './App.css';
 
-const App = () =>
+import type { GlobalState } from './state';
+
+type Props = {
+  isOffline: boolean,
+};
+
+const App = ({ isOffline }: Props) =>
   <div className="App">
+    {isOffline && <div className="App-offline">Offline</div>}
     <Search />
     <Filter />
     <Sorting />
@@ -21,4 +28,8 @@ const App = () =>
   </div>
 ;
 
-export default hot(module)(App);
+export default hot(module)(connect(
+  (state: GlobalState) => ({
+    isOffline: state.isOffline,
+  }),
+)(App));
