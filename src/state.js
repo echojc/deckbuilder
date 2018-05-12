@@ -152,6 +152,15 @@ export default (state: GlobalState = defaultState, action: Action): GlobalState 
       pools: {
         [state.currentPoolId]: {
           cards: { $unset: [action.instanceId] },
+          decks: ((action) => (decks) => {
+            const result = {};
+            for (const deckId of Object.keys(decks)) {
+              result[deckId] = update(decks[deckId], {
+                cardInstanceIds: { $unset: [action.instanceId] },
+              });
+            }
+            return result;
+          })(action),
         },
       },
     });
