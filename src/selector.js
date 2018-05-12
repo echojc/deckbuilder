@@ -44,6 +44,21 @@ export const deckCards = createSelector(
   }))
 );
 
+export const deckCardsByCmc = createSelector(
+  [deckCards],
+  (deckCards) => {
+    const result = {};
+    for (const cardInstance of deckCards) {
+      if (result[cardInstance.card.cmc]) {
+        result[cardInstance.card.cmc].push(cardInstance);
+      } else {
+        result[cardInstance.card.cmc] = [cardInstance];
+      }
+    }
+    return result;
+  },
+);
+
 export const poolCards = createSelector(
   [pool, deck, cardCache],
   (pool, deck, cardCache) =>

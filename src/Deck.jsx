@@ -2,7 +2,7 @@
 
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { deckCards } from './selector';
+import { deckCards, deckCardsByCmc } from './selector';
 import { removeCardInstanceFromDeck } from './state';
 import Card from './Card';
 import DeckPicker from './DeckPicker';
@@ -11,21 +11,26 @@ import type { GlobalState } from './state';
 import type { CardDataInstance } from './selector';
 
 type Props = {
-  deck: CardDataInstance[],
+  deckSize: number,
+  deckByCmc: { [cmc: string]: CardDataInstance[] },
   removeCardInstanceFromDeck: (name: string) => void,
 };
 
-const Deck = ({ deck, removeCardInstanceFromDeck }: Props) =>
+const Deck = ({ deckSize, deckByCmc, removeCardInstanceFromDeck }: Props) =>
   <div className="Deck">
-    Deck (card count: {deck.length}) <DeckPicker />
+    Deck (card count: {deckSize}) <DeckPicker />
     <div className="Deck-cards">
-      {deck.map(card => (
-        <div
-          key={card.instanceId}
-          className="Deck-card"
-          onClick={() => removeCardInstanceFromDeck(card.instanceId)}
-        >
-          <Card {...card.card} />
+      {Object.keys(deckByCmc).map(cmc => (
+        <div key={cmc} className="Deck-cards-mana">
+          {deckByCmc[cmc].map(card => (
+            <div
+              key={card.instanceId}
+              className="Deck-card"
+              onClick={() => removeCardInstanceFromDeck(card.instanceId)}
+            >
+              <Card {...card.card} />
+            </div>
+          ))}
         </div>
       ))}
     </div>
@@ -34,7 +39,8 @@ const Deck = ({ deck, removeCardInstanceFromDeck }: Props) =>
 
 export default connect(
   (state: GlobalState) => ({
-    deck: deckCards(state),
+    deckSize: deckCards(state).length,
+    deckByCmc: deckCardsByCmc(state),
   }),
   (dispatch) => ({
     removeCardInstanceFromDeck: (name: string) => dispatch(removeCardInstanceFromDeck(name)),
