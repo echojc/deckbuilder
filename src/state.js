@@ -7,6 +7,7 @@ import type { CardData } from './saga';
 
 export type Filters = {
   cmc?: number,
+  color?: string,
 };
 
 export type SortBy = 'name' | 'cmc' | 'power' | 'toughness' | 'rarity';

@@ -90,6 +90,9 @@ export const filteredPoolCards = createSelector(
     if (filters.cmc != null) {
       cards = cards.filter(_ => _.card.cmc === filters.cmc);
     }
+    if (filters.color != null) {
+      cards = cards.filter(_ => _.card.colors.includes(filters.color));
+    }
     return cards.sort(sortingFuncs[sorting.by][sorting.direction]);
   },
 );
@@ -99,6 +102,15 @@ export const poolCardsCmcs = createSelector(
   (poolCards) => {
     const result = {};
     poolCards.forEach(_ => result[_.card.cmc] = true);
+    return Object.keys(result).sort();
+  },
+);
+
+export const poolCardsColors = createSelector(
+  [poolCards],
+  (poolCards) => {
+    const result = {};
+    poolCards.forEach(_ => (_.card.colors || []).forEach(color => result[color] = true));
     return Object.keys(result).sort();
   },
 );
