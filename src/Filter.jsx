@@ -15,7 +15,7 @@ type Props = {
 function renderSelect(options: any[], selected: any, onSelect: (v?: string) => void): React$Node {
   return (
     <select
-      value={selected || 'any'}
+      value={selected === undefined ? 'any' : selected}
       onChange={e => {
         const value = e.target.value;
         onSelect(value === 'any' ? undefined : value);
