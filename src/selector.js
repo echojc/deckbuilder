@@ -21,6 +21,16 @@ const deck = createSelector(
   (pool, currentDeckId) => pool.decks[currentDeckId] || {},
 );
 
+export const availableDecks = createSelector(
+  [pool],
+  (pool) => {
+    const decks = pool.decks || {};
+    const result = {};
+    Object.keys(decks).forEach(deckId => result[deckId] = decks[deckId].name);
+    return result;
+  },
+);
+
 export type CardDataInstance = {
   instanceId: string,
   card: CardData,

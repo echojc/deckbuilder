@@ -105,6 +105,15 @@ export const autocompleteRequest = (partial: string): AutocompleteRequest => ({ 
 export type AutocompleteResult = { type: 'AUTOCOMPLETE_RESULT', results: string[] };
 export const autocompleteResult = (results: string[]): AutocompleteResult => ({ type: 'AUTOCOMPLETE_RESULT', results });
 
+export type SetCurrentDeck = { type: 'SET_CURRENT_DECK', id: string };
+export const setCurrentDeck = (id: string): SetCurrentDeck => ({ type: 'SET_CURRENT_DECK', id });
+
+export type AddAndSwitchToDeck = { type: 'ADD_AND_SWITCH_TO_DECK', name?: string };
+export const addAndSwitchToDeck = (name?: string): AddAndSwitchToDeck => ({ type: 'ADD_AND_SWITCH_TO_DECK', name });
+
+export type RenameDeck = { type: 'RENAME_DECK', id: string, newName: string };
+export const renameDeck = (id: string, newName: string): RenameDeck => ({ type: 'RENAME_DECK', id, newName });
+
 export type Action =
   SetOffline |
   AddCardToPool |
@@ -115,7 +124,10 @@ export type Action =
   SetFilters |
   SetSorting |
   AutocompleteRequest |
-  AutocompleteResult;
+  AutocompleteResult |
+  SetCurrentDeck |
+  AddAndSwitchToDeck |
+  RenameDeck;
 export default (state: GlobalState = defaultState, action: Action): GlobalState => {
   switch (action.type) {
     case 'SET_OFFLINE': {
@@ -174,6 +186,31 @@ export default (state: GlobalState = defaultState, action: Action): GlobalState 
     });
     case 'AUTOCOMPLETE_RESULT': return update(state, {
       autocompleteResults: { $set: action.results },
+    });
+    case 'SET_CURRENT_DECK': return update(state, {
+      currentDeckId: { $set: action.id },
+    });
+    case 'ADD_AND_SWITCH_TO_DECK': {
+      const newId = uuidv4();
+      return update(state, {
+        currentDeckId: { $set: newId },
+        pools: {
+          [state.currentPoolId]: {
+            decks: { $merge: { [newId]: newDeck(newId, action.name)} },
+          },
+        },
+      });
+    }
+    case 'RENAME_DECK': return update(state, {
+      pools: {
+        [state.currentPoolId]: {
+          decks: {
+            [action.id]: {
+              name: { $set: action.newName },
+            },
+          },
+        },
+      },
     });
     default: return state;
   }

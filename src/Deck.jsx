@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { deckCards } from './selector';
 import { removeCardInstanceFromDeck } from './state';
 import Card from './Card';
+import DeckPicker from './DeckPicker';
 import './Deck.css';
 import type { GlobalState } from './state';
 import type { CardDataInstance } from './selector';
@@ -16,7 +17,7 @@ type Props = {
 
 const Deck = ({ deck, removeCardInstanceFromDeck }: Props) =>
   <div className="Deck">
-    Deck:
+    Deck (card count: {deck.length}) <DeckPicker />
     <div className="Deck-cards">
       {deck.map(card => (
         <div
