@@ -1,9 +1,9 @@
 // @flow
 
-import { takeEvery, select, put, call } from 'redux-saga/effects';
-import { cacheCard } from './state';
+import { takeEvery, select, put, call, all } from 'redux-saga/effects';
+import { autocompleteResult, cacheCard } from './state';
 import * as scry from './scry';
-import type { CacheCard } from './state';
+import type { AutocompleteRequest, CacheCard } from './state';
 
 export type CardData = {
   _version: number,
@@ -61,23 +61,82 @@ function* ensureCached(localStorage, action: CacheCard): any {
       return;
     }
   } catch (e) {
+    console.group('ensureCached - save card data');
     console.error(e);
+    console.groupEnd();
   }
 
   // not available in local storage, download from scryfall
   try {
     // placeholder for loading
     yield put(cacheCard(cardName, { name: cardName }));
-    const cardData = extractCardData(yield scry.named(cardName));
+    const cardData = extractCardData(yield call(scry.named, cardName));
     // save to local storage for future
     yield call([localStorage, 'setItem'], cardName, JSON.stringify(cardData));
     yield put(cacheCard(cardName, cardData));
   } catch (e) {
+    console.group('ensureCached - scry');
     console.error(e);
+    console.groupEnd();
     yield put(cacheCard(cardName, null));
   }
 }
 
+function* autocomplete(localStorage, action: AutocompleteRequest): any {
+  // normalize to lower case for internal usage
+  const partial = action.partial.toLowerCase();
+
+  try {
+    // fetch online results
+    const results = yield call(scry.autocomplete, partial);
+
+    // try save to known cards in local storage (for offline)
+    try {
+      const groupedByInitialLetters = {};
+      for (const name of results) {
+        const initialLetters = name.slice(0, 2).toLowerCase();
+        const group = groupedByInitialLetters[initialLetters] || [];
+        groupedByInitialLetters[initialLetters] = group.push(name);
+      }
+      for (const initialLetters of Object.keys(groupedByInitialLetters)) {
+        const keyName = `names/${initialLetters}`;
+        // get existing card names and merge
+        const knownCards = JSON.parse(yield call([localStorage, 'getItem'], keyName)) || [];
+        const mergedCards = knownCards.concat(groupedByInitialLetters[initialLetters]).sort();
+        yield call([localStorage, 'setItem'], keyName, JSON.stringify(mergedCards));
+      }
+    } catch (e) {
+      console.group('autocomplete - save known cards');
+      console.error(e);
+      console.groupEnd();
+    }
+
+    // save to state
+    yield put(autocompleteResult(results));
+  } catch (e) {
+    console.group('autocomplete - scry');
+    console.error(e);
+    console.groupEnd();
+
+    // failed to retrieve online, fallback to known cards
+    try {
+      const initialLetters = partial.slice(0, 2);
+      const keyName = `names/${initialLetters}`;
+      const knownCards = JSON.parse(yield call([localStorage, 'getItem'], keyName)) || [];
+      const offlineResults = knownCards.filter(_ => _.toLowerCase().startsWith(partial));
+      yield put(autocompleteResult(offlineResults));
+    } catch (e) {
+      console.group('autocomplete - retrieve known cards');
+      console.error(e);
+      console.groupEnd();
+      yield put(autocompleteResult([]));
+    }
+  }
+}
+
 export default function*(): any {
-  yield takeEvery(['ADD_CARD_TO_POOL'], ensureCached, window.localStorage);
+  yield all([
+    takeEvery(['ADD_CARD_TO_POOL'], ensureCached, window.localStorage),
+    takeEvery(['AUTOCOMPLETE_REQUEST'], autocomplete, window.localStorage),
+  ]);
 }

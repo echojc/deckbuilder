@@ -4,25 +4,26 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as scry from './scry';
 import debounce from 'debounce';
-import { addCardToPool } from './state';
+import { addCardToPool, autocompleteRequest } from './state';
+import type { GlobalState } from './state';
 
 type Props = {
-  addCardToPool: (name: string) => void;
+  autocompleteResults: string[],
+  autocompleteRequest: (partial: string) => void,
+  addCardToPool: (name: string) => void,
 };
 
 type State = {
   searchValue: string,
-  autocompleteResults: string[],
 };
 
 class Search extends Component<Props, State> {
   state = {
     searchValue: '',
-    autocompleteResults: [],
   };
 
   searchOrSelect = (value) => {
-    if (this.state.autocompleteResults.includes(value)) {
+    if (this.props.autocompleteResults.includes(value)) {
       this.setState({ searchValue: '' });
       this.props.addCardToPool(value);
     } else {
@@ -31,10 +32,7 @@ class Search extends Component<Props, State> {
     }
   };
 
-  search = debounce(
-    async (partial) => this.setState({ autocompleteResults: await scry.autocomplete(partial) }),
-    250,
-  );
+  search = debounce(partial => this.props.autocompleteRequest(partial), 250);
 
   render() {
     return (
@@ -46,7 +44,7 @@ class Search extends Component<Props, State> {
           onChange={e => this.searchOrSelect(e.target.value)}
         />
         <datalist id="list">
-          {this.state.autocompleteResults.map(n => <option key={n}>{n}</option>)}
+          {this.props.autocompleteResults.map(n => <option key={n}>{n}</option>)}
         </datalist>
       </div>
     );
@@ -54,8 +52,11 @@ class Search extends Component<Props, State> {
 }
 
 export default connect(
-  null,
+  (state: GlobalState) => ({
+    autocompleteResults: state.autocompleteResults,
+  }),
   (dispatch) => ({
+    autocompleteRequest: (partial: string) => dispatch(autocompleteRequest(partial)),
     addCardToPool: (name: string) => dispatch(addCardToPool(name)),
   }),
 )(Search);

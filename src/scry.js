@@ -4,7 +4,7 @@ const base = 'https://api.scryfall.com';
 //const base = 'http://localhost:8080';
 
 export async function autocomplete(partial: string): Promise<string[]> {
-  if (!partial || partial.length < 3) return [];
+  if (!partial || partial.length < 2) return [];
 
   const res = await fetch(`${base}/cards/autocomplete?q=${partial}`);
   const json = await res.json();

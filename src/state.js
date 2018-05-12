@@ -52,6 +52,7 @@ export type GlobalState = {
   currentPoolId: string,
   currentDeckId: string,
   cardCache: { [name: string]: $Shape<CardData> },
+  autocompleteResults: string[],
   filters: Filters,
   sorting: Sort,
   pools: { [id: string]: Pool },
@@ -61,6 +62,7 @@ const defaultState: GlobalState = {
   currentPoolId: 'default',
   currentDeckId: 'default',
   cardCache: {},
+  autocompleteResults: [],
   filters: {},
   sorting: {
     by: 'name',
@@ -88,6 +90,12 @@ export const setFilters = (filters: Filters): SetFilters => ({ type: 'SET_FILTER
 
 export type SetSorting = { type: 'SET_SORTING', by: SortBy, direction: SortDirection };
 export const setSorting = (by: SortBy, direction: SortDirection): SetSorting => ({ type: 'SET_SORTING', by, direction });
+
+export type AutocompleteRequest = { type: 'AUTOCOMPLETE_REQUEST', partial: string };
+export const autocompleteRequest = (partial: string): AutocompleteRequest => ({ type: 'AUTOCOMPLETE_REQUEST', partial });
+
+export type AutocompleteResult = { type: 'AUTOCOMPLETE_RESULT', results: string[] };
+export const autocompleteResult = (results: string[]): AutocompleteResult => ({ type: 'AUTOCOMPLETE_RESULT', results });
 
 export type Action = AddCardToPool | AddCardInstanceToDeck | RemoveCardInstanceFromDeck | CacheCard | SetFilters;
 export default (state: GlobalState = defaultState, action: Action): GlobalState => {
@@ -132,6 +140,9 @@ export default (state: GlobalState = defaultState, action: Action): GlobalState 
         by: { $set: action.by },
         direction: { $set: action.direction },
       },
+    });
+    case 'AUTOCOMPLETE_RESULT': return update(state, {
+      autocompleteResults: { $set: action.results },
     });
     default: return state;
   }
