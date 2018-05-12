@@ -1,7 +1,7 @@
 // @flow
 
 import { takeEvery, select, put, call, all } from 'redux-saga/effects';
-import { autocompleteResult, cacheCard } from './state';
+import { autocompleteResult, cacheCard, setOffline } from './state';
 import * as scry from './scry';
 import type { AutocompleteRequest, CacheCard } from './state';
 
@@ -67,28 +67,51 @@ function* ensureCached(localStorage, action: CacheCard): any {
   }
 
   // not available in local storage, download from scryfall
+  const isOffline = yield select(_ => _.isOffline);
   try {
     // placeholder for loading
     yield put(cacheCard(cardName, { name: cardName }));
-    const cardData = extractCardData(yield call(scry.named, cardName));
+
+    let response;
+    try {
+      response = yield call(scry.named, cardName);
+      if (isOffline) {
+        yield put(setOffline(false));
+      }
+    } catch (e) {
+      if (!isOffline) {
+        yield put(setOffline(true));
+      }
+      throw e;
+    }
+
+    const cardData = extractCardData(response);
     // save to local storage for future
     yield call([localStorage, 'setItem'], cardName, JSON.stringify(cardData));
     yield put(cacheCard(cardName, cardData));
   } catch (e) {
-    console.group('ensureCached - scry');
-    console.error(e);
-    console.groupEnd();
-    yield put(cacheCard(cardName, null));
+    if (!isOffline) {
+      console.group('ensureCached - scry');
+      console.error(e);
+      console.groupEnd();
+    }
   }
 }
 
 function* autocomplete(localStorage, action: AutocompleteRequest): any {
   // normalize to lower case for internal usage
+  if (!action.partial || action.partial.length < 2) {
+    return;
+  }
   const partial = action.partial.toLowerCase();
 
+  const isOffline = yield select(_ => _.isOffline);
   try {
     // fetch online results
     const results = yield call(scry.autocomplete, partial);
+    if (isOffline) {
+      yield put(setOffline(true));
+    }
 
     // try save to known cards in local storage (for offline)
     try {
@@ -114,9 +137,12 @@ function* autocomplete(localStorage, action: AutocompleteRequest): any {
     // save to state
     yield put(autocompleteResult(results));
   } catch (e) {
-    console.group('autocomplete - scry');
-    console.error(e);
-    console.groupEnd();
+    if (!isOffline) {
+      console.group('autocomplete - scry');
+      console.error(e);
+      console.groupEnd();
+      yield put(setOffline(true));
+    }
 
     // failed to retrieve online, fallback to known cards
     try {

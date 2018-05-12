@@ -49,6 +49,7 @@ function newPool(id?: string = uuidv4(), name?: string = 'new pool'): Pool {
 }
 
 export type GlobalState = {
+  isOffline: boolean,
   currentPoolId: string,
   currentDeckId: string,
   cardCache: { [name: string]: $Shape<CardData> },
@@ -59,6 +60,7 @@ export type GlobalState = {
 };
 
 const defaultState: GlobalState = {
+  isOffline: false,
   currentPoolId: 'default',
   currentDeckId: 'default',
   cardCache: {},
@@ -73,6 +75,9 @@ const defaultState: GlobalState = {
   },
 };
 
+export type SetOffline = { type: 'SET_OFFLINE', isOffline: boolean };
+export const setOffline = (isOffline: boolean): SetOffline => ({ type: 'SET_OFFLINE', isOffline });
+
 export type AddCardToPool = { type: 'ADD_CARD_TO_POOL', cardName: string };
 export const addCardToPool = (cardName: string): AddCardToPool => ({ type: 'ADD_CARD_TO_POOL', cardName });
 
@@ -82,8 +87,8 @@ export const addCardInstanceToDeck = (instanceId: string): AddCardInstanceToDeck
 export type RemoveCardInstanceFromDeck = { type: 'REMOVE_CARD_INSTANCE_FROM_DECK', instanceId: string };
 export const removeCardInstanceFromDeck = (instanceId: string): RemoveCardInstanceFromDeck => ({ type: 'REMOVE_CARD_INSTANCE_FROM_DECK', instanceId });
 
-export type CacheCard = { type: 'CACHE_CARD', cardName: string, cardData: ?$Shape<CardData> };
-export const cacheCard = (cardName: string, cardData: ?$Shape<CardData>): CacheCard => ({ type: 'CACHE_CARD', cardName, cardData });
+export type CacheCard = { type: 'CACHE_CARD', cardName: string, cardData: $Shape<CardData> };
+export const cacheCard = (cardName: string, cardData: $Shape<CardData>): CacheCard => ({ type: 'CACHE_CARD', cardName, cardData });
 
 export type SetFilters = { type: 'SET_FILTERS', filters: Filters };
 export const setFilters = (filters: Filters): SetFilters => ({ type: 'SET_FILTERS', filters });
@@ -97,9 +102,24 @@ export const autocompleteRequest = (partial: string): AutocompleteRequest => ({ 
 export type AutocompleteResult = { type: 'AUTOCOMPLETE_RESULT', results: string[] };
 export const autocompleteResult = (results: string[]): AutocompleteResult => ({ type: 'AUTOCOMPLETE_RESULT', results });
 
-export type Action = AddCardToPool | AddCardInstanceToDeck | RemoveCardInstanceFromDeck | CacheCard | SetFilters;
+export type Action =
+  SetOffline |
+  AddCardToPool |
+  AddCardInstanceToDeck |
+  RemoveCardInstanceFromDeck |
+  CacheCard |
+  SetFilters |
+  SetSorting |
+  AutocompleteRequest |
+  AutocompleteResult;
 export default (state: GlobalState = defaultState, action: Action): GlobalState => {
   switch (action.type) {
+    case 'SET_OFFLINE': {
+      console.log('switching to', action.isOffline ? 'offline' : 'online', 'mode');
+      return update(state, {
+        isOffline: { $set: action.isOffline },
+      });
+    }
     case 'ADD_CARD_TO_POOL': return update(state, {
       pools: {
         [state.currentPoolId]: {
