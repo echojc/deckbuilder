@@ -106,7 +106,11 @@ export const filteredPoolCards = createSelector(
       cards = cards.filter(_ => _.card.cmc === filters.cmc);
     }
     if (filters.color != null) {
-      cards = cards.filter(_ => _.card.colors.includes(filters.color));
+      if (filters.color === 'colorless') {
+        cards = cards.filter(_ => _.card.colors.length === 0);
+      } else {
+        cards = cards.filter(_ => _.card.colors.includes(filters.color));
+      }
     }
     return cards.sort(sortingFuncs[sorting.by][sorting.direction]);
   },
@@ -125,7 +129,14 @@ export const poolCardsColors = createSelector(
   [poolCards],
   (poolCards) => {
     const result = {};
-    poolCards.forEach(_ => (_.card.colors || []).forEach(color => result[color] = true));
+    poolCards.forEach(_ => {
+      if (!_.card.colors) return;
+      if (_.card.colors.length === 0) {
+        result['colorless'] = true;
+      } else {
+        _.card.colors.forEach(color => result[color] = true);
+      }
+    });
     return Object.keys(result).sort();
   },
 );
