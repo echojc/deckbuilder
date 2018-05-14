@@ -27,8 +27,10 @@ type Props = {
 
 const Deck = ({ deckCounts, deckByCmc, removeCardInstanceFromDeck }: Props) =>
   <div className="Deck">
-    Deck ({deckCounts.total}):
+    Deck
+    <DeckPicker />
     <ul className="Deck-counts">
+      <li>({deckCounts.total} cards)</li>
       {deckCounts.creature > 0 && <li>{deckCounts.creature} creatures</li>}
       {deckCounts.instant > 0 && <li>{deckCounts.instant} instants</li>}
       {deckCounts.sorcery > 0 && <li>{deckCounts.sorcery} sorceries</li>}
@@ -36,11 +38,10 @@ const Deck = ({ deckCounts, deckByCmc, removeCardInstanceFromDeck }: Props) =>
       {deckCounts.artifact > 0 && <li>{deckCounts.artifact} artifacts</li>}
       {deckCounts.land > 0 && <li>{deckCounts.land} lands</li>}
     </ul>
-    <DeckPicker />
     <Exporter />
     <div className="Deck-cards">
       {Object.keys(deckByCmc).map(cmc => (
-        <div key={cmc} className="Deck-cards-mana">
+        <div key={cmc} className="Deck-card-group">
           {deckByCmc[cmc].map(card => (
             <div
               key={card.instanceId}

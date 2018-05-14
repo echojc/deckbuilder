@@ -1,17 +1,23 @@
 .Deck-cards {
-  height: 500px;
-  border: 1px solid black;
-  overflow: auto;
+  display: flex;
+  width: 100%;
 }
 
-.Deck-cards-mana {
-  display: flex;
-  flex-wrap: wrap;
-  align-content: flex-start;
+.Deck-card-group + .Deck-card-group {
+  margin-left: 0.5rem;
 }
 
 .Deck-card {
+  position: relative;
   cursor: pointer;
+}
+
+.Deck-card + .Deck-card {
+  margin-top: -176px;
+}
+
+.Deck-card:hover {
+  z-index: 1;
 }
 
 .Deck-counts {
