@@ -113,7 +113,7 @@ export const filteredPoolCards = createSelector(
       }
     }
     if (filters.type != null) {
-      cards = cards.filter(_ => _.card.typeLine.includes(filters.type));
+      cards = cards.filter(_ => _.card.typeLine && _.card.typeLine.includes(filters.type));
     }
     if (filters.text) {
       const lowered = filters.text.toLowerCase();
