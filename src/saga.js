@@ -13,8 +13,8 @@ export type CardData = {
   cmc: number,
   typeLine: string,
   oracleText: string,
-  power: string, // can be "*"
-  toughness: string, // can be "*"
+  power?: string, // can be "*"
+  toughness?: string, // can be "*"
   rarity: string,
   colors: string,
   imageUris: {

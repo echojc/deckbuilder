@@ -76,7 +76,7 @@ const rarityOrder = {
   rare: 20,
   mythic: 30,
 };
-const sortingFuncs = {
+const sortingFuncs: { [by: string]: { asc: (a: CardDataInstance, b: CardDataInstance) => number, desc: (a: CardDataInstance, b: CardDataInstance) => number } } = {
   name: {
     asc: (a, b) => a.card.name.localeCompare(b.card.name),
     desc: (a, b) => b.card.name.localeCompare(a.card.name),
@@ -86,12 +86,12 @@ const sortingFuncs = {
     desc: (a, b) => b.card.cmc - a.card.cmc,
   },
   power: {
-    asc: (a, b) => a.card.power - b.card.power,
-    desc: (a, b) => b.card.power - a.card.power,
+    asc: (a, b) => (parseInt(a.card.power, 10) || 0) - (parseInt(b.card.power, 10) || 0),
+    desc: (a, b) => (parseInt(b.card.power, 10) || 0) - (parseInt(a.card.power, 10) || 0),
   },
   toughness: {
-    asc: (a, b) => a.card.toughness - b.card.toughness,
-    desc: (a, b) => b.card.toughness - a.card.toughness,
+    asc: (a, b) => (parseInt(a.card.toughness, 10) || 0) - (parseInt(b.card.toughness, 10) || 0),
+    desc: (a, b) => (parseInt(b.card.toughness, 10) || 0) - (parseInt(a.card.toughness, 10) || 0),
   },
   rarity: {
     asc: (a, b) => rarityOrder[a.card.rarity] - rarityOrder[b.card.rarity],
