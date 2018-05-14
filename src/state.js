@@ -9,6 +9,7 @@ export type Filters = {
   cmc?: number,
   color?: string,
   type?: string,
+  text?: string,
 };
 
 export type SortBy = 'name' | 'cmc' | 'power' | 'toughness' | 'rarity';

@@ -38,6 +38,7 @@ const Filter = ({ setFilters, filters, poolCardsCmcs, poolCardsColors, poolCards
     CMC {renderSelect(['any', ...poolCardsCmcs], filters.cmc, numberify(cmc => setFilters({ cmc })))}
     Color {renderSelect(['any', ...poolCardsColors], filters.color, color => setFilters({ color }))}
     Type {renderSelect(['any', ...poolCardsTypes], filters.type, type => setFilters({ type }))}
+    Text <input value={filters.text || ''} onChange={e => setFilters({ text: e.target.value })} />
   </div>
 ;
 
