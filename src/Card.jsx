@@ -24,7 +24,10 @@ const Card = ({ card, size, setPreviewCardName }: Props) =>
     <div>{card.typeLine}</div>
     <div>{card.oracleText}</div>
     <div>{card.power}/{card.toughness}</div>
-    <img className="Card-art" src={card.imageUris && card.imageUris[size]} />
+    <div
+      className="Card-art"
+      style={{ backgroundImage: `url(${card.imageUris && card.imageUris[size]})` }}
+    />
   </div>
 ;
 
