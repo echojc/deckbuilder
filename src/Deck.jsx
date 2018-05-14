@@ -16,6 +16,9 @@ type Props = {
     creature: number,
     instant: number,
     sorcery: number,
+    enchantment: number,
+    artifact: number,
+    land: number,
   },
   deckByCmc: { [cmc: string]: CardDataInstance[] },
   removeCardInstanceFromDeck: (name: string) => void,
@@ -23,7 +26,16 @@ type Props = {
 
 const Deck = ({ deckCounts, deckByCmc, removeCardInstanceFromDeck }: Props) =>
   <div className="Deck">
-    Deck ({deckCounts.total}): {deckCounts.creature} creatures / {deckCounts.instant} instants / {deckCounts.sorcery} sorceries <DeckPicker />
+    Deck ({deckCounts.total}):
+    <ul className="Deck-counts">
+      {deckCounts.creature > 0 && <li>{deckCounts.creature} creatures</li>}
+      {deckCounts.instant > 0 && <li>{deckCounts.instant} instants</li>}
+      {deckCounts.sorcery > 0 && <li>{deckCounts.sorcery} sorceries</li>}
+      {deckCounts.enchantment > 0 && <li>{deckCounts.enchantment} enchantments</li>}
+      {deckCounts.artifact > 0 && <li>{deckCounts.artifact} artifacts</li>}
+      {deckCounts.land > 0 && <li>{deckCounts.land} lands</li>}
+    </ul>
+    <DeckPicker />
     <div className="Deck-cards">
       {Object.keys(deckByCmc).map(cmc => (
         <div key={cmc} className="Deck-cards-mana">
@@ -49,6 +61,9 @@ export default connect(
       creature: deckCards(state).filter(_ => _.card.typeLine && _.card.typeLine.includes('Creature')).length,
       instant: deckCards(state).filter(_ => _.card.typeLine && _.card.typeLine.includes('Instant')).length,
       sorcery: deckCards(state).filter(_ => _.card.typeLine && _.card.typeLine.includes('Sorcery')).length,
+      enchantment: deckCards(state).filter(_ => _.card.typeLine && _.card.typeLine.includes('Enchantment')).length,
+      artifact: deckCards(state).filter(_ => _.card.typeLine && _.card.typeLine.includes('Artifact')).length,
+      land: deckCards(state).filter(_ => _.card.typeLine && _.card.typeLine.includes('Land')).length,
     },
     deckByCmc: deckCardsByCmc(state),
   }),
