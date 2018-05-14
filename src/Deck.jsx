@@ -2,7 +2,7 @@
 
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { deckCards, deckCardsByCmc } from './selector';
+import { deckCards, deckCardsByCmcSorted } from './selector';
 import { removeCardInstanceFromDeck } from './state';
 import Card from './Card';
 import DeckPicker from './DeckPicker';
@@ -68,7 +68,7 @@ export default connect(
       artifact: deckCards(state).filter(_ => _.card.typeLine && _.card.typeLine.includes('Artifact')).length,
       land: deckCards(state).filter(_ => _.card.typeLine && _.card.typeLine.includes('Land')).length,
     },
-    deckByCmc: deckCardsByCmc(state),
+    deckByCmc: deckCardsByCmcSorted(state),
   }),
   (dispatch) => ({
     removeCardInstanceFromDeck: (name: string) => dispatch(removeCardInstanceFromDeck(name)),

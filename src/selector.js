@@ -45,10 +45,11 @@ export const deckCards = createSelector(
   }))
 );
 
-export const deckCardsByCmc = createSelector(
+export const deckCardsByCmcSorted = createSelector(
   [deckCards],
   (deckCards) => {
     const result = {};
+    // group by cmc
     for (const cardInstance of deckCards) {
       if (result[cardInstance.card.cmc]) {
         result[cardInstance.card.cmc].push(cardInstance);
@@ -56,6 +57,8 @@ export const deckCardsByCmc = createSelector(
         result[cardInstance.card.cmc] = [cardInstance];
       }
     }
+    // sort by name
+    Object.keys(result).forEach(_ => result[_].sort((a, b) => a.card.name.localeCompare(b.card.name)));
     return result;
   },
 );
