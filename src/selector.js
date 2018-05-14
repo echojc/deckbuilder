@@ -112,6 +112,9 @@ export const filteredPoolCards = createSelector(
         cards = cards.filter(_ => _.card.colors.includes(filters.color));
       }
     }
+    if (filters.type != null) {
+      cards = cards.filter(_ => _.card.typeLine.includes(filters.type));
+    }
     return cards.sort(sortingFuncs[sorting.by][sorting.direction]);
   },
 );
@@ -136,6 +139,19 @@ export const poolCardsColors = createSelector(
       } else {
         _.card.colors.forEach(color => result[color] = true);
       }
+    });
+    return Object.keys(result).sort();
+  },
+);
+
+export const poolCardsTypes = createSelector(
+  [poolCards],
+  (poolCards) => {
+    const result = {};
+    poolCards.forEach(_ => {
+      if (!_.card.typeLine) return;
+      const types = _.card.typeLine.split('—')[0].split(/\s/).filter(_ => _.length);
+      types.forEach(type => result[type] = true);
     });
     return Object.keys(result).sort();
   },

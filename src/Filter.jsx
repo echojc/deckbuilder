@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
-import { poolCardsCmcs, poolCardsColors } from './selector';
+import { poolCardsCmcs, poolCardsColors, poolCardsTypes } from './selector';
 import { setFilters } from './state';
 import type { GlobalState, Filters } from './state';
 
@@ -11,6 +11,7 @@ type Props = {
   filters: Filters,
   poolCardsCmcs: number[],
   poolCardsColors: string[],
+  poolCardsTypes: string[],
 };
 
 function renderSelect(options: any[], selected: any, onSelect: (v?: string) => void): React$Node {
@@ -31,11 +32,12 @@ function numberify(f: (v?: number) => void): (v?: string) => void {
   return (v?: string) => v ? f(parseInt(v, 10)) : f();
 }
 
-const Filter = ({ setFilters, filters, poolCardsCmcs, poolCardsColors }: Props) =>
+const Filter = ({ setFilters, filters, poolCardsCmcs, poolCardsColors, poolCardsTypes }: Props) =>
   <div className="Filter">
     Filters:
     CMC {renderSelect(['any', ...poolCardsCmcs], filters.cmc, numberify(cmc => setFilters({ cmc })))}
     Color {renderSelect(['any', ...poolCardsColors], filters.color, color => setFilters({ color }))}
+    Type {renderSelect(['any', ...poolCardsTypes], filters.type, type => setFilters({ type }))}
   </div>
 ;
 
@@ -44,6 +46,7 @@ export default connect(
     filters: state.filters,
     poolCardsCmcs: poolCardsCmcs(state),
     poolCardsColors: poolCardsColors(state),
+    poolCardsTypes: poolCardsTypes(state),
   }),
   (dispatch) => ({
     setFilters: (filters: Filters) => dispatch(setFilters(filters)),
