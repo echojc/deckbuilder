@@ -1,6 +1,7 @@
 // @flow
 
 import { createSelector } from 'reselect';
+import { toCockatriceFormat, asDataUrl } from './export';
 import type { CardData } from './saga';
 //import type { GlobalState } from './state';
 
@@ -16,7 +17,7 @@ const pool = createSelector(
   (pools, currentPoolId) => pools[currentPoolId] || {},
 );
 
-const deck = createSelector(
+export const deck = createSelector(
   [pool, currentDeckId],
   (pool, currentDeckId) => pool.decks[currentDeckId] || {},
 );
@@ -159,4 +160,9 @@ export const poolCardsTypes = createSelector(
     });
     return Object.keys(result).sort();
   },
+);
+
+export const exportCockatriceFormatBase64 = createSelector(
+  [deck, deckCards],
+  (deck, deckCards) => asDataUrl('text/xml', toCockatriceFormat(deck.name, deckCards.map(_ => _.card.name))),
 );

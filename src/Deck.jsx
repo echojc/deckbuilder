@@ -6,6 +6,7 @@ import { deckCards, deckCardsByCmc } from './selector';
 import { removeCardInstanceFromDeck } from './state';
 import Card from './Card';
 import DeckPicker from './DeckPicker';
+import Exporter from './Exporter';
 import './Deck.css';
 import type { GlobalState } from './state';
 import type { CardDataInstance } from './selector';
@@ -36,6 +37,7 @@ const Deck = ({ deckCounts, deckByCmc, removeCardInstanceFromDeck }: Props) =>
       {deckCounts.land > 0 && <li>{deckCounts.land} lands</li>}
     </ul>
     <DeckPicker />
+    <Exporter />
     <div className="Deck-cards">
       {Object.keys(deckByCmc).map(cmc => (
         <div key={cmc} className="Deck-cards-mana">
