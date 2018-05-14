@@ -1,6 +1,8 @@
 // @flow
 
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { setPreviewCardName } from './state';
 import './Card.css';
 
 import type { CardData } from './saga';
@@ -8,10 +10,15 @@ import type { CardData } from './saga';
 type Props = {
   card: $Shape<CardData>,
   size: 'small' | 'normal',
+  setPreviewCardName: (cardName: ?string) => void,
 };
 
-const Card = ({ card, size }: Props) =>
-  <div className={`Card Card-${size}`}>
+const Card = ({ card, size, setPreviewCardName }: Props) =>
+  <div
+    className={`Card Card-${size}`}
+    onMouseEnter={() => setPreviewCardName(card.name)}
+    onMouseLeave={() => setPreviewCardName(null)}
+  >
     <div>{card.name}</div>
     <div>{card.manaCost}</div>
     <div>{card.typeLine}</div>
@@ -21,4 +28,9 @@ const Card = ({ card, size }: Props) =>
   </div>
 ;
 
-export default Card;
+export default connect(
+  null,
+  (dispatch) => ({
+    setPreviewCardName: (cardName: ?string) => dispatch(setPreviewCardName(cardName)),
+  }),
+)(Card);

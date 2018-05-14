@@ -122,8 +122,8 @@ export const addAndSwitchToDeck = (name?: string): AddAndSwitchToDeck => ({ type
 export type RenameDeck = { type: 'RENAME_DECK', id: string, newName: string };
 export const renameDeck = (id: string, newName: string): RenameDeck => ({ type: 'RENAME_DECK', id, newName });
 
-export type PreviewCard = { type: 'PREVIEW_CARD', cardName: ?string };
-export const previewCard = (cardName: ?string): PreviewCard => ({ type: 'PREVIEW_CARD', cardName });
+export type SetPreviewCardName = { type: 'SET_PREVIEW_CARD_NAME', cardName: ?string };
+export const setPreviewCardName = (cardName: ?string): SetPreviewCardName => ({ type: 'SET_PREVIEW_CARD_NAME', cardName });
 
 export type Action =
   MergeState |
@@ -140,7 +140,7 @@ export type Action =
   SetCurrentDeck |
   AddAndSwitchToDeck |
   RenameDeck |
-  PreviewCard;
+  SetPreviewCardName;
 export default (state: GlobalState = defaultState, action: Action): GlobalState => {
   switch (action.type) {
     case 'MERGE_STATE': return update(state, { $merge: action.state });
@@ -235,7 +235,7 @@ export default (state: GlobalState = defaultState, action: Action): GlobalState 
         },
       },
     });
-    case 'PREVIEW_CARD': return update(state, {
+    case 'SET_PREVIEW_CARD_NAME': return update(state, {
       previewCardName: { $set: action.cardName },
     });
     default: return state;

@@ -176,5 +176,5 @@ export const exportCockatriceFormatBase64 = createSelector(
 
 export const previewCard = createSelector(
   [previewCardName, cardCache],
-  (previewCardName, cardCache) => previewCardName && cardCache[previewCardName] || { name: previewCardName },
+  (previewCardName, cardCache) => previewCardName && (cardCache[previewCardName] || { name: previewCardName }),
 );
