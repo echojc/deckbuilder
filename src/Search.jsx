@@ -39,13 +39,14 @@ class Search extends Component<Props, State> {
   render() {
     return (
       <div className="Search">
-        Search:
+        Add card to pool:
         <input
           ref={e => this.inputEl = e}
           list="list"
           value={this.state.searchValue}
           onChange={e => this.searchOrSelect(e.target.value)}
           onKeyPress={e => e.key === 'Enter' && this.searchOrSelect(this.state.searchValue)}
+          placeholder="search card..."
         />
         <datalist id="list">
           {this.props.autocompleteResults.map(n => <option key={n}>{n}</option>)}
