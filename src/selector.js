@@ -11,6 +11,7 @@ const currentDeckId = state => state.currentDeckId;
 const cardCache = state => state.cardCache;
 const filters = state => state.filters;
 const sorting = state => state.sorting;
+const previewCardName = state => state.previewCardName;
 
 const pool = createSelector(
   [pools, currentPoolId],
@@ -171,4 +172,9 @@ export const poolCardsTypes = createSelector(
 export const exportCockatriceFormatBase64 = createSelector(
   [deck, deckCards],
   (deck, deckCards) => asDataUrl('text/xml', toCockatriceFormat(deck.name, deckCards.map(_ => _.card.name))),
+);
+
+export const previewCard = createSelector(
+  [previewCardName, cardCache],
+  (previewCardName, cardCache) => previewCardName && cardCache[previewCardName] || { name: previewCardName },
 );

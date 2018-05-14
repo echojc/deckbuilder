@@ -48,7 +48,7 @@ const Deck = ({ deckCounts, deckByCmc, removeCardInstanceFromDeck }: Props) =>
               className="Deck-card"
               onClick={() => removeCardInstanceFromDeck(card.instanceId)}
             >
-              <Card {...card.card} />
+              <Card card={card.card} size="small" />
             </div>
           ))}
         </div>

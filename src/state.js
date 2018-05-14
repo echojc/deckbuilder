@@ -60,6 +60,7 @@ export type GlobalState = {
   filters: Filters,
   sorting: Sort,
   pools: { [id: string]: Pool },
+  previewCardName: ?string,
 };
 
 const defaultState: GlobalState = {
@@ -76,6 +77,7 @@ const defaultState: GlobalState = {
   pools: {
     default: newPool('default', 'default'),
   },
+  previewCardName: null,
 };
 
 export type MergeState = { type: 'MERGE_STATE', state: $Shape<GlobalState> };
@@ -120,6 +122,9 @@ export const addAndSwitchToDeck = (name?: string): AddAndSwitchToDeck => ({ type
 export type RenameDeck = { type: 'RENAME_DECK', id: string, newName: string };
 export const renameDeck = (id: string, newName: string): RenameDeck => ({ type: 'RENAME_DECK', id, newName });
 
+export type PreviewCard = { type: 'PREVIEW_CARD', cardName: ?string };
+export const previewCard = (cardName: ?string): PreviewCard => ({ type: 'PREVIEW_CARD', cardName });
+
 export type Action =
   MergeState |
   SetOffline |
@@ -134,7 +139,8 @@ export type Action =
   AutocompleteResult |
   SetCurrentDeck |
   AddAndSwitchToDeck |
-  RenameDeck;
+  RenameDeck |
+  PreviewCard;
 export default (state: GlobalState = defaultState, action: Action): GlobalState => {
   switch (action.type) {
     case 'MERGE_STATE': return update(state, { $merge: action.state });
@@ -228,6 +234,9 @@ export default (state: GlobalState = defaultState, action: Action): GlobalState 
           },
         },
       },
+    });
+    case 'PREVIEW_CARD': return update(state, {
+      previewCardName: { $set: action.cardName },
     });
     default: return state;
   }

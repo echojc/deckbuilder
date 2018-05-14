@@ -26,7 +26,7 @@ const Pool = ({ poolSize, filteredPool, addCardInstanceToDeck, removeCardInstanc
           className="Pool-card"
           onClick={() => addCardInstanceToDeck(card.instanceId)}
         >
-          <Card {...card.card} />
+          <Card card={card.card} size="small" />
           <div
             className="Pool-card-delete"
             onClick={e => { removeCardInstanceFromPool(card.instanceId); e.stopPropagation(); }}

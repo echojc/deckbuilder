@@ -1,13 +1,21 @@
 .Card {
   position: relative;
-  width: 146px;
-  height: 204px;
   border: 1px solid black;
-  border-radius: 8px;
+  border-radius: 0.5rem;
   background-color: #fff;
   overflow: hidden;
   box-sizing: border-box;
-  padding: 4px;
+  padding: 0.25rem;
+}
+
+.Card-small {
+  width: 146px;
+  height: 204px;
+}
+
+.Card-normal {
+  width: 360px;
+  height: 500px;
 }
 
 .Card-art {
