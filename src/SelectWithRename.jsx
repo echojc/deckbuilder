@@ -42,13 +42,13 @@ class SelectWithRename extends Component<Props, State> {
             onChange={e => this.setState({ inputValue: e.target.value })}
             onKeyPress={e => e.key === 'Enter' && this.completeRename() }
           />
-          [<a href="javascript:;" onClick={this.completeRename}>done</a>]
+          <button onClick={this.completeRename}>done</button>
         </span>
       : <span className="SelectWithRename">
           <select value={this.props.value} onChange={e => this.props.onChange(e.target.value)}>
             {Object.entries(this.props.options).map(([value, label]) => <option key={value} value={value} label={label} />)}
           </select>
-          [<a href="javascript:;" onClick={this.initRename}>rename</a>]
+          <button onClick={this.initRename}>rename</button>
         </span>
     ;
   }

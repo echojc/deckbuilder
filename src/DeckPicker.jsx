@@ -24,7 +24,7 @@ const DeckPicker = ({ availableDecks, currentDeckId, setCurrentDeck, addAndSwitc
       onChange={newId => setCurrentDeck(newId)}
       onRename={(id, newName) => renameDeck(id, newName)}
     />
-    [<a href="javascript:;" onClick={() => addAndSwitchToDeck() }>create new</a>]
+    <button onClick={() => addAndSwitchToDeck() }>create new</button>
   </span>
 ;
 

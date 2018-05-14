@@ -13,12 +13,12 @@ type Props = {
 
 const Exporter = ({ deckCount, deckName, exportCockatriceFormatBase64 }: Props) =>
   <span className="Exporter">
-    [{deckCount === 0
-      ? <span>export to cockatrice</span>
+    {deckCount === 0
+      ? <button disabled={true}>export to cockatrice</button>
       : <a href={exportCockatriceFormatBase64} download={`${deckName.replace(/\s/, '-')}.cod`}>
-          export to cockatrice
+          <button>export to cockatrice</button>
         </a>
-    }]
+    }
   </span>
 ;
 
