@@ -11,14 +11,19 @@ import type { GlobalState } from './state';
 import type { CardDataInstance } from './selector';
 
 type Props = {
-  deckSize: number,
+  deckCounts: {
+    total: number,
+    creature: number,
+    instant: number,
+    sorcery: number,
+  },
   deckByCmc: { [cmc: string]: CardDataInstance[] },
   removeCardInstanceFromDeck: (name: string) => void,
 };
 
-const Deck = ({ deckSize, deckByCmc, removeCardInstanceFromDeck }: Props) =>
+const Deck = ({ deckCounts, deckByCmc, removeCardInstanceFromDeck }: Props) =>
   <div className="Deck">
-    Deck (card count: {deckSize}) <DeckPicker />
+    Deck ({deckCounts.total}): {deckCounts.creature} creatures / {deckCounts.instant} instants / {deckCounts.sorcery} sorceries <DeckPicker />
     <div className="Deck-cards">
       {Object.keys(deckByCmc).map(cmc => (
         <div key={cmc} className="Deck-cards-mana">
@@ -39,7 +44,12 @@ const Deck = ({ deckSize, deckByCmc, removeCardInstanceFromDeck }: Props) =>
 
 export default connect(
   (state: GlobalState) => ({
-    deckSize: deckCards(state).length,
+    deckCounts: {
+      total: deckCards(state).length,
+      creature: deckCards(state).filter(_ => _.card.typeLine && _.card.typeLine.includes('Creature')).length,
+      instant: deckCards(state).filter(_ => _.card.typeLine && _.card.typeLine.includes('Instant')).length,
+      sorcery: deckCards(state).filter(_ => _.card.typeLine && _.card.typeLine.includes('Sorcery')).length,
+    },
     deckByCmc: deckCardsByCmc(state),
   }),
   (dispatch) => ({
