@@ -9,6 +9,7 @@ import Deck from './Deck';
 import Search from './Search';
 import Filter from './Filter';
 import Sorting from './Sorting';
+import Preview from './Preview';
 import './App.css';
 
 import type { GlobalState } from './state';
@@ -23,7 +24,10 @@ const App = ({ isOffline }: Props) =>
     <Search />
     <Filter />
     <Sorting />
-    <Pool />
+    <div style={{ display: 'flex' }}>
+      <Pool />
+      <Preview />
+    </div>
     <Deck />
   </div>
 ;

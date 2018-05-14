@@ -39,10 +39,13 @@ export type CardDataInstance = {
 
 export const deckCards = createSelector(
   [deck, pool, cardCache],
-  (deck, pool, cardCache) => Object.keys(deck.cardInstanceIds || {}).map(instanceId => ({
-    instanceId,
-    card: cardCache[(pool.cards || {})[instanceId]] || {},
-  }))
+  (deck, pool, cardCache) =>
+    Object.keys(deck.cardInstanceIds || {})
+      .map(instanceId => ({
+        instanceId,
+        card: cardCache[(pool.cards || {})[instanceId]],
+      }))
+      .filter(_ => _.card)
 );
 
 export const deckCardsByCmcSorted = createSelector(
