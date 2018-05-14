@@ -12,7 +12,7 @@ export type CardData = {
   manaCost: string,
   cmc: number,
   typeLine: string,
-  oracleText: string,
+  oracleText?: string,
   power?: string, // can be "*"
   toughness?: string, // can be "*"
   rarity: string,
