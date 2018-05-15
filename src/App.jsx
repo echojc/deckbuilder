@@ -24,11 +24,13 @@ const App = ({ isOffline }: Props) =>
     <Search />
     <Filter />
     <Sorting />
-    <div style={{ display: 'flex' }}>
-      <Pool />
+    <div className="App-workspace">
+      <div className="App-workspace-cards">
+        <Pool />
+        <Deck />
+      </div>
       <Preview />
     </div>
-    <Deck />
   </div>
 ;
 

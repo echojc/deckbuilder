@@ -1,7 +1,3 @@
-.Pool {
-  flex-grow: 1;
-}
-
 .Pool-cards {
   display: flex;
   flex-wrap: wrap;

@@ -2,6 +2,14 @@
   position: relative;
 }
 
+.App-workspace {
+  display: flex;
+}
+
+.App-workspace-cards {
+  overflow: hidden;
+}
+
 .App-offline {
   position: absolute;
   top: 0;
