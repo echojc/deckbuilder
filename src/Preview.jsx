@@ -14,9 +14,11 @@ type Props = {
 
 const Preview = ({ card }: Props) =>
   <div className="Preview">
-    Preview:
-    <div className="Preview-card">
-      {card && <Card card={card} size="normal" />}
+    <div className="Preview-sticky">
+      Preview:
+      <div className="Preview-card">
+        {card && <Card card={card} size="normal" />}
+      </div>
     </div>
   </div>
 ;

@@ -1,5 +1,6 @@
 .Preview {
   display: none;
+  position: relative;
   margin-left: 1rem;
 }
 
@@ -7,6 +8,11 @@
   .Preview {
     display: block;
   }
+}
+
+.Preview-sticky {
+  position: sticky;
+  top: 0;
 }
 
 .Preview-card {
