@@ -3,7 +3,7 @@
 import { takeEvery, takeLatest, select, put, call, all, spawn } from 'redux-saga/effects';
 import { autocompleteResult, cacheCard, setOffline, mergeState } from './state';
 import * as scry from './scry';
-import type { AutocompleteRequest, CacheCard } from './state';
+import type { AutocompleteRequest, CacheCard, SetPreviewCardName } from './state';
 
 export type CardData = {
   _version: number,
@@ -45,7 +45,7 @@ function extractCardData(card: any): CardData {
   };
 }
 
-function* fetchCard(localStorage, cardName: string): any {
+function* loadCardFromStorageOrDownload(localStorage, cardName: string): any {
   // check local storage first
   try {
     const storedData = yield call([localStorage, 'getItem'], cardName);
@@ -92,14 +92,14 @@ function* fetchCard(localStorage, cardName: string): any {
   }
 }
 
-function* ensureCached(localStorage, action: CacheCard): any {
+function* ensureCached(localStorage, action: CacheCard | SetPreviewCardName): any {
   const { cardName } = action;
   const existing = yield select(_ => _.cardCache[cardName]);
   if (existing && existing._version === CACHE_VERSION) {
     return;
   }
 
-  yield spawn(fetchCard, localStorage, cardName);
+  yield spawn(loadCardFromStorageOrDownload, localStorage, cardName);
 }
 
 function* autocomplete(localStorage, action: AutocompleteRequest): any {
@@ -192,7 +192,7 @@ function* loadState(localStorage): any {
       for (const poolId of Object.keys(state.pools)) {
         const cards = state.pools[poolId].cards;
         for (const instanceId of Object.keys(cards)) {
-          yield spawn(fetchCard, localStorage, cards[instanceId]);
+          yield spawn(loadCardFromStorageOrDownload, localStorage, cards[instanceId]);
         }
       }
     }
@@ -205,7 +205,10 @@ function* loadState(localStorage): any {
 
 export default function*(): any {
   yield all([
-    takeLatest(['ADD_CARD_TO_POOL'], ensureCached, window.localStorage),
+    takeLatest([
+      'ADD_CARD_TO_POOL',
+      'PREVIEW_CARD',
+    ], ensureCached, window.localStorage),
     takeLatest(['AUTOCOMPLETE_REQUEST'], autocomplete, window.localStorage),
     takeEvery(['LOAD_STATE'], loadState, window.localStorage),
     takeLatest([
