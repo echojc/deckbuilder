@@ -4,19 +4,20 @@
   background-color: #fff;
   overflow: hidden;
   box-sizing: border-box;
-  padding: 0.25rem;
 }
 
 .Card-small {
   width: 146px;
   height: 204px;
   border-radius: 8px;
+  padding: 4px;
 }
 
 .Card-normal {
   width: 360px;
   height: 500px;
   border-radius: 18px;
+  padding: 10px;
 }
 
 .Card-art {

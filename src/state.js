@@ -52,23 +52,22 @@ function newPool(id?: string = uuidv4(), name?: string = 'new pool'): Pool {
 }
 
 export type GlobalState = {
-  isOffline: boolean,
   currentPoolId: string,
   currentDeckId: string,
-  cardCache: { [name: string]: $Shape<CardData> },
-  autocompleteResults: string[],
   filters: Filters,
   sorting: Sort,
   pools: { [id: string]: Pool },
+
+  isOffline: boolean,
+  cardCache: { [name: string]: $Shape<CardData> },
+  autocompleteResults: string[],
   previewCardName: ?string,
+  highlightCardType: ?string,
 };
 
 const defaultState: GlobalState = {
-  isOffline: false,
   currentPoolId: 'default',
   currentDeckId: 'default',
-  cardCache: {},
-  autocompleteResults: [],
   filters: {},
   sorting: {
     by: 'name',
@@ -77,7 +76,12 @@ const defaultState: GlobalState = {
   pools: {
     default: newPool('default', 'default'),
   },
+
+  isOffline: false,
+  cardCache: {},
+  autocompleteResults: [],
   previewCardName: null,
+  highlightCardType: null,
 };
 
 export type MergeState = { type: 'MERGE_STATE', state: $Shape<GlobalState> };
@@ -125,6 +129,9 @@ export const renameDeck = (id: string, newName: string): RenameDeck => ({ type: 
 export type SetPreviewCardName = { type: 'SET_PREVIEW_CARD_NAME', cardName: ?string };
 export const setPreviewCardName = (cardName: ?string): SetPreviewCardName => ({ type: 'SET_PREVIEW_CARD_NAME', cardName });
 
+export type SetHighlightCardType = { type: 'SET_HIGHLIGHT_CARD_TYPE', cardType: ?string };
+export const setHighlightCardType = (cardType: ?string): SetHighlightCardType => ({ type: 'SET_HIGHLIGHT_CARD_TYPE', cardType });
+
 export type Action =
   MergeState |
   SetOffline |
@@ -140,7 +147,8 @@ export type Action =
   SetCurrentDeck |
   AddAndSwitchToDeck |
   RenameDeck |
-  SetPreviewCardName;
+  SetPreviewCardName |
+  SetHighlightCardType;
 export default (state: GlobalState = defaultState, action: Action): GlobalState => {
   switch (action.type) {
     case 'MERGE_STATE': return update(state, { $merge: action.state });
@@ -237,6 +245,9 @@ export default (state: GlobalState = defaultState, action: Action): GlobalState 
     });
     case 'SET_PREVIEW_CARD_NAME': return update(state, {
       previewCardName: { $set: action.cardName },
+    });
+    case 'SET_HIGHLIGHT_CARD_TYPE': return update(state, {
+      highlightCardType: { $set: action.cardType },
     });
     default: return state;
   }

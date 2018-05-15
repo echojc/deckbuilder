@@ -1,0 +1,11 @@
+.DeckCounts {
+  display: inline-flex;
+  list-style: none;
+  margin: 0;
+  padding: 0 0.5rem;
+}
+
+.DeckCounts li + li::before {
+  content: '/';
+  padding: 0 0.25rem;
+}
