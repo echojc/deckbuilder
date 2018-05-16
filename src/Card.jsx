@@ -18,11 +18,13 @@ const Card = ({ card, size, setPreviewCardName }: Props) =>
     className={`Card Card-${size}`}
     onMouseEnter={() => setPreviewCardName(card.name)}
   >
-    <div>{card.name}</div>
+    <div><strong>{card.name}</strong></div>
     <div>{card.manaCost}</div>
     <div>{card.typeLine}</div>
-    <div>{card.oracleText}</div>
-    <div>{card.power}/{card.toughness}</div>
+    <div className="Card-text">
+      {card.oracleText && card.oracleText.split('\n').map((line, i) => <p key={i}>{line}</p>)}
+    </div>
+    {card.power && card.toughness && <div>{card.power} / {card.toughness}</div>}
     <div
       className="Card-art"
       style={{ backgroundImage: `url(${card.imageUris && card.imageUris[size]})` }}

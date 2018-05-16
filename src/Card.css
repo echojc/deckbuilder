@@ -1,4 +1,6 @@
 .Card {
+  display: flex;
+  flex-direction: column;
   position: relative;
   border: 1px solid black;
   background-color: #fff;
@@ -27,4 +29,8 @@
   width: 100%;
   height: 100%;
   background-size: cover;
+}
+
+.Card-text {
+  overflow: auto;
 }
