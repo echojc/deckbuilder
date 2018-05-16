@@ -46,7 +46,7 @@ class Search extends Component<Props, State> {
           value={this.state.searchValue}
           onChange={e => this.searchOrSelect(e.target.value)}
           onKeyPress={e => e.key === 'Enter' && this.searchOrSelect(this.state.searchValue)}
-          placeholder="search card..."
+          placeholder="search card name..."
         />
         <datalist id="list">
           {this.props.autocompleteResults.map(n => <option key={n}>{n}</option>)}
