@@ -15,10 +15,6 @@ type Props = {
   poolCardsTypes: string[],
 };
 
-// nothing selected is display visually the same as everything selected, but the original internal state is preserved
-// this leads to 2 behaviours when visually clicking an option with everything selected:
-//   - if everything was deselected, only the selected option becomes chosen
-//   - if everything was manually selected, the selected option becomes deselected
 function renderCheckboxes(options: string[], selected: string[], onChange: (vs: string[]) => void): React$Node {
   return (
     <span>
@@ -26,7 +22,7 @@ function renderCheckboxes(options: string[], selected: string[], onChange: (vs: 
         <label key={option}>
           <input
             type="checkbox"
-            checked={selected.length === 0 || selected.includes(option)}
+            checked={selected.includes(option)}
             onChange={() => onChange(selected.includes(option) ? selected.filter(_ => _ !== option) : selected.concat(option))}
           />
           {option}
