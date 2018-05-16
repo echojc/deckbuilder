@@ -3,7 +3,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { poolCardsCmcs, poolCardsColors, poolCardsTypes } from './selector';
-import { setFilters } from './state';
+import { setFilters, defaultFilters } from './state';
 import type { GlobalState, Filters } from './state';
 import './Filter.css';
 
@@ -39,6 +39,7 @@ function renderCheckboxes(options: string[], selected: string[], onChange: (vs: 
 const Filter = ({ setFilters, filters, poolCardsCmcs, poolCardsColors, poolCardsTypes }: Props) =>
   <div className="Filter">
     Filters:
+    <button onClick={() => setFilters(defaultFilters)}>Reset all</button>
     <span><input placeholder="search card text..." value={filters.text} onChange={e => setFilters({ text: e.target.value })} /></span>
     <span>CMC {renderCheckboxes(poolCardsCmcs, filters.cmcs, cmcs => setFilters({ cmcs }))}</span>
     <span>Color {renderCheckboxes(poolCardsColors, filters.colors, colors => setFilters({ colors }))}</span>

@@ -13,6 +13,13 @@ export type Filters = {
   text: string,
 };
 
+export const defaultFilters = {
+  cmcs: [],
+  colors: [],
+  types: [],
+  text: '',
+};
+
 export type SortBy = 'name' | 'cmc' | 'power' | 'toughness' | 'rarity';
 export type SortDirection = 'asc' | 'desc';
 export type Sort = {
@@ -71,12 +78,7 @@ const defaultState: GlobalState = {
   _version: STATE_VERSION,
   currentPoolId: 'default',
   currentDeckId: 'default',
-  filters: {
-    cmcs: [],
-    colors: [],
-    types: [],
-    text: '',
-  },
+  filters: defaultFilters,
   sorting: {
     by: 'name',
     direction: 'asc',
