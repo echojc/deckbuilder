@@ -1,0 +1,5 @@
+.Filter span + span {
+  border-left: 1px solid #ccc;
+  margin-left: 0.5rem;
+  padding-left: 0.5rem;
+}

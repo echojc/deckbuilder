@@ -3,13 +3,14 @@
 import update from 'immutability-helper';
 import uuidv4 from 'uuid/v4';
 
+import { STATE_VERSION } from './saga';
 import type { CardData } from './saga';
 
 export type Filters = {
-  cmc?: number,
-  color?: string,
-  type?: string,
-  text?: string,
+  cmcs: string[],
+  colors: string[],
+  types: string[],
+  text: string,
 };
 
 export type SortBy = 'name' | 'cmc' | 'power' | 'toughness' | 'rarity';
@@ -52,6 +53,7 @@ function newPool(id?: string = uuidv4(), name?: string = 'new pool'): Pool {
 }
 
 export type GlobalState = {
+  _version: number,
   currentPoolId: string,
   currentDeckId: string,
   filters: Filters,
@@ -66,9 +68,15 @@ export type GlobalState = {
 };
 
 const defaultState: GlobalState = {
+  _version: STATE_VERSION,
   currentPoolId: 'default',
   currentDeckId: 'default',
-  filters: {},
+  filters: {
+    cmcs: [],
+    colors: [],
+    types: [],
+    text: '',
+  },
   sorting: {
     by: 'name',
     direction: 'asc',
@@ -105,8 +113,8 @@ export const removeCardInstanceFromDeck = (instanceId: string): RemoveCardInstan
 export type CacheCard = { type: 'CACHE_CARD', cardName: string, cardData: $Shape<CardData> };
 export const cacheCard = (cardName: string, cardData: $Shape<CardData>): CacheCard => ({ type: 'CACHE_CARD', cardName, cardData });
 
-export type SetFilters = { type: 'SET_FILTERS', filters: Filters };
-export const setFilters = (filters: Filters): SetFilters => ({ type: 'SET_FILTERS', filters });
+export type SetFilters = { type: 'SET_FILTERS', filters: $Shape<Filters> };
+export const setFilters = (filters: $Shape<Filters>): SetFilters => ({ type: 'SET_FILTERS', filters });
 
 export type SetSorting = { type: 'SET_SORTING', by: SortBy, direction: SortDirection };
 export const setSorting = (by: SortBy, direction: SortDirection): SetSorting => ({ type: 'SET_SORTING', by, direction });
@@ -207,7 +215,7 @@ export default (state: GlobalState = defaultState, action: Action): GlobalState 
       cardCache: { $merge: { [action.cardName]: action.cardData } },
     });
     case 'SET_FILTERS': return update(state, {
-      filters: { $merge: { ...action.filters } },
+      filters: { $merge: action.filters },
     });
     case 'SET_SORTING': return update(state, {
       sorting: {

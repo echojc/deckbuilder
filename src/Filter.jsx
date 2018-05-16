@@ -5,40 +5,44 @@ import { connect } from 'react-redux';
 import { poolCardsCmcs, poolCardsColors, poolCardsTypes } from './selector';
 import { setFilters } from './state';
 import type { GlobalState, Filters } from './state';
+import './Filter.css';
 
 type Props = {
-  setFilters: (filters: Filters) => void,
+  setFilters: (filters: $Shape<Filters>) => void,
   filters: Filters,
-  poolCardsCmcs: number[],
+  poolCardsCmcs: string[],
   poolCardsColors: string[],
   poolCardsTypes: string[],
 };
 
-function renderSelect(options: any[], selected: any, onSelect: (v?: string) => void): React$Node {
+// nothing selected is display visually the same as everything selected, but the original internal state is preserved
+// this leads to 2 behaviours when visually clicking an option with everything selected:
+//   - if everything was deselected, only the selected option becomes chosen
+//   - if everything was manually selected, the selected option becomes deselected
+function renderCheckboxes(options: string[], selected: string[], onChange: (vs: string[]) => void): React$Node {
   return (
-    <select
-      value={selected === undefined ? 'any' : selected}
-      onChange={e => {
-        const value = e.target.value;
-        onSelect(value === 'any' ? undefined : value);
-      }}
-    >
-      {options.map(o => <option key={o}>{o}</option>)}
-    </select>
+    <span>
+      {options.map(option => (
+        <label key={option}>
+          <input
+            type="checkbox"
+            checked={selected.length === 0 || selected.includes(option)}
+            onChange={() => onChange(selected.includes(option) ? selected.filter(_ => _ !== option) : selected.concat(option))}
+          />
+          {option}
+        </label>
+      ))}
+    </span>
   );
-}
-
-function numberify(f: (v?: number) => void): (v?: string) => void {
-  return (v?: string) => v ? f(parseInt(v, 10)) : f();
 }
 
 const Filter = ({ setFilters, filters, poolCardsCmcs, poolCardsColors, poolCardsTypes }: Props) =>
   <div className="Filter">
     Filters:
-    CMC {renderSelect(['any', ...poolCardsCmcs], filters.cmc, numberify(cmc => setFilters({ cmc })))}
-    Color {renderSelect(['any', ...poolCardsColors], filters.color, color => setFilters({ color }))}
-    Type {renderSelect(['any', ...poolCardsTypes], filters.type, type => setFilters({ type }))}
-    Text <input value={filters.text || ''} onChange={e => setFilters({ text: e.target.value })} />
+    <span><input placeholder="search card text..." value={filters.text} onChange={e => setFilters({ text: e.target.value })} /></span>
+    <span>CMC {renderCheckboxes(poolCardsCmcs, filters.cmcs, cmcs => setFilters({ cmcs }))}</span>
+    <span>Color {renderCheckboxes(poolCardsColors, filters.colors, colors => setFilters({ colors }))}</span>
+    <span>Type {renderCheckboxes(poolCardsTypes, filters.types, types => setFilters({ types }))}</span>
   </div>
 ;
 
@@ -50,6 +54,6 @@ export default connect(
     poolCardsTypes: poolCardsTypes(state),
   }),
   (dispatch) => ({
-    setFilters: (filters: Filters) => dispatch(setFilters(filters)),
+    setFilters: (filters: $Shape<Filters>) => dispatch(setFilters(filters)),
   }),
 )(Filter);

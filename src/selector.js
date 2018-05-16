@@ -110,18 +110,22 @@ export const filteredPoolCards = createSelector(
   [poolCards, filters, sorting],
   (poolCards, filters, sorting) => {
     let cards = poolCards.slice();
-    if (filters.cmc != null) {
-      cards = cards.filter(_ => _.card.cmc === filters.cmc);
+    if (filters.cmcs.length > 0) {
+      cards = cards.filter(_ => _.card.cmc && filters.cmcs.includes(_.card.cmc.toString()));
     }
-    if (filters.color != null) {
-      if (filters.color === 'colorless') {
-        cards = cards.filter(_ => _.card.colors.length === 0);
-      } else {
-        cards = cards.filter(_ => _.card.colors.includes(filters.color));
-      }
+    if (filters.colors.length > 0) {
+      const includeColorless = filters.colors.includes('colorless');
+      cards = cards.filter(_ => {
+        if (!_.card.colors) return false;
+        if (_.card.colors.length === 0) {
+          return includeColorless;
+        } else {
+          return _.card.colors.some(color => filters.colors.includes(color));
+        }
+      });
     }
-    if (filters.type != null) {
-      cards = cards.filter(_ => _.card.typeLine && _.card.typeLine.includes(filters.type));
+    if (filters.types.length > 0) {
+      cards = cards.filter(_ => _.card.typeLine && filters.types.some(type => _.card.typeLine.includes(type)));
     }
     if (filters.text) {
       const lowered = filters.text.toLowerCase();
@@ -135,7 +139,10 @@ export const poolCardsCmcs = createSelector(
   [poolCards],
   (poolCards) => {
     const result = {};
-    poolCards.forEach(_ => result[_.card.cmc] = true);
+    poolCards.forEach(_ => {
+      if (!_.card.cmc) return;
+      result[_.card.cmc.toString()] = true;
+    });
     return Object.keys(result).sort();
   },
 );
@@ -165,7 +172,8 @@ export const poolCardsTypes = createSelector(
       const types = _.card.typeLine.split('—')[0].split(/\s/).filter(_ => _.length);
       types.forEach(type => result[type] = true);
     });
-    return Object.keys(result).sort();
+    // remove "basic" as a type
+    return Object.keys(result).filter(_ => _ !== 'Basic').sort();
   },
 );
 

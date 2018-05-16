@@ -2,6 +2,7 @@
 
 import { takeEvery, takeLatest, select, put, call, all, spawn } from 'redux-saga/effects';
 import { autocompleteResult, cacheCard, setOffline, mergeState } from './state';
+import { migrateState } from './migrate';
 import * as scry from './scry';
 import type { AutocompleteRequest, CacheCard, SetPreviewCardName } from './state';
 
@@ -172,6 +173,7 @@ function* autocomplete(localStorage, action: AutocompleteRequest): any {
 
 function* saveState(localStorage): any {
   const state = yield select(_ => ({
+    _version: _._version,
     currentPoolId: _.currentPoolId,
     currentDeckId: _.currentDeckId,
     filters: _.filters,
@@ -181,13 +183,20 @@ function* saveState(localStorage): any {
   yield call([localStorage, 'setItem'], 'state', JSON.stringify(state));
 }
 
+export const STATE_VERSION = 1;
+
 function* loadState(localStorage): any {
   try {
-    const stateData = yield call([localStorage, 'getItem'], 'state');
-    const state = JSON.parse(stateData);
+    const savedStateData = yield call([localStorage, 'getItem'], 'state');
+    const savedState = JSON.parse(savedStateData);
 
-    if (state) {
+    if (savedState) {
+      // migrate loaded state if it's behind
+      const state = migrateState(savedState);
+
+      // merge it into the base state
       yield put(mergeState(state));
+
       // load all card data from cache (or fetch online)
       for (const poolId of Object.keys(state.pools)) {
         const cards = state.pools[poolId].cards;
@@ -216,7 +225,6 @@ export default function*(): any {
       'REMOVE_CARD_INSTANCE_FROM_POOL',
       'ADD_CARD_INSTANCE_TO_DECK',
       'REMOVE_CARD_INSTANCE_FROM_DECK',
-      'CACHE_CARD',
       'SET_FILTERS',
       'SET_SORTING',
       'SET_CURRENT_DECK',
