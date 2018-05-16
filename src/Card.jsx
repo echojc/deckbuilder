@@ -17,7 +17,6 @@ const Card = ({ card, size, setPreviewCardName }: Props) =>
   <div
     className={`Card Card-${size}`}
     onMouseEnter={() => setPreviewCardName(card.name)}
-    onMouseLeave={() => setPreviewCardName(null)}
   >
     <div>{card.name}</div>
     <div>{card.manaCost}</div>
