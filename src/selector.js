@@ -108,7 +108,7 @@ export const filteredPoolCards = createSelector(
         (_.card.name && _.card.name.toLowerCase().includes(lowered))
       ));
     }
-    return cards.sort(sortComparator(sorting, sortingThenBys));
+    return cards.sort(sortComparator([sorting, ...sortingThenBys]));
   },
 );
 

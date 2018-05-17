@@ -35,13 +35,15 @@ const sortingFuncs: { [by: string]: { asc: SortingFunc, desc: SortingFunc } } = 
   },
 };
 
-export function sortComparator(sorting: Sort, sortingThenBys: Sort[]): SortingFunc {
+export function sortComparator(sortings: Sort[]): SortingFunc {
   return (a: CardDataInstance, b: CardDataInstance): number => {
-    const result = sortingFuncs[sorting.by][sorting.direction](a, b);
-    if (result !== 0 || sortingThenBys.length === 0) {
-      return result;
-    } else {
-      return sortComparator(sortingThenBys[0], sortingThenBys.slice(1))(a, b);
+    let result = 0;
+    for (const sorting of sortings) {
+      result = sortingFuncs[sorting.by][sorting.direction](a, b);
+      if (result !== 0) {
+        return result;
+      }
     }
+    return result;
   };
 }
