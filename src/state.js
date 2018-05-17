@@ -23,6 +23,7 @@ export const defaultFilters = {
 export type SortBy = 'name' | 'cmc' | 'power' | 'toughness' | 'rarity';
 export type SortDirection = 'asc' | 'desc';
 export type Sort = {
+  id: string,
   by: SortBy,
   direction: SortDirection,
 };
@@ -65,6 +66,7 @@ export type GlobalState = {
   currentDeckId: string,
   filters: Filters,
   sorting: Sort,
+  sortingThenBys: Sort[],
   pools: { [id: string]: Pool },
 
   isOffline: boolean,
@@ -80,9 +82,11 @@ const defaultState: GlobalState = {
   currentDeckId: 'default',
   filters: defaultFilters,
   sorting: {
+    id: 'root',
     by: 'name',
     direction: 'asc',
   },
+  sortingThenBys: [],
   pools: {
     default: newPool('default', 'default'),
   },
@@ -118,8 +122,14 @@ export const cacheCard = (cardName: string, cardData: $Shape<CardData>): CacheCa
 export type SetFilters = { type: 'SET_FILTERS', filters: $Shape<Filters> };
 export const setFilters = (filters: $Shape<Filters>): SetFilters => ({ type: 'SET_FILTERS', filters });
 
-export type SetSorting = { type: 'SET_SORTING', by: SortBy, direction: SortDirection };
-export const setSorting = (by: SortBy, direction: SortDirection): SetSorting => ({ type: 'SET_SORTING', by, direction });
+export type SetSorting = { type: 'SET_SORTING', by: SortBy, direction: SortDirection, thenByIndex?: number };
+export const setSorting = (by: SortBy, direction: SortDirection, thenByIndex?: number): SetSorting => ({ type: 'SET_SORTING', by, direction, thenByIndex });
+
+export type AddSortingThenBy = { type: 'ADD_SORTING_THEN_BY', by: SortBy };
+export const addSortingThenBy = (by: SortBy): AddSortingThenBy => ({ type: 'ADD_SORTING_THEN_BY', by });
+
+export type RemoveLastSortingThenBy = { type: 'REMOVE_LAST_SORTING_THEN_BY' };
+export const removeLastSortingThenBy = (): RemoveLastSortingThenBy => ({ type: 'REMOVE_LAST_SORTING_THEN_BY' });
 
 export type AutocompleteRequest = { type: 'AUTOCOMPLETE_REQUEST', partial: string };
 export const autocompleteRequest = (partial: string): AutocompleteRequest => ({ type: 'AUTOCOMPLETE_REQUEST', partial });
@@ -152,6 +162,8 @@ export type Action =
   CacheCard |
   SetFilters |
   SetSorting |
+  AddSortingThenBy |
+  RemoveLastSortingThenBy |
   AutocompleteRequest |
   AutocompleteResult |
   SetCurrentDeck |
@@ -219,11 +231,30 @@ export default (state: GlobalState = defaultState, action: Action): GlobalState 
     case 'SET_FILTERS': return update(state, {
       filters: { $merge: action.filters },
     });
-    case 'SET_SORTING': return update(state, {
-      sorting: {
-        by: { $set: action.by },
-        direction: { $set: action.direction },
-      },
+    case 'SET_SORTING': return action.thenByIndex == null
+      ? update(state, {
+          sorting: {
+            by: { $set: action.by },
+            direction: { $set: action.direction },
+          },
+        })
+      : update(state, {
+          sortingThenBys: {
+            [action.thenByIndex]: {
+              by: { $set: action.by },
+              direction: { $set: action.direction },
+            },
+          },
+        });
+    case 'ADD_SORTING_THEN_BY': return update(state, {
+      sortingThenBys: { $push: [{
+        id: uuidv4(),
+        by: action.by,
+        direction: 'asc',
+      }]},
+    });
+    case 'REMOVE_LAST_SORTING_THEN_BY': return update(state, {
+      sortingThenBys: { $set: state.sortingThenBys.slice(0, state.sortingThenBys.length - 1) },
     });
     case 'AUTOCOMPLETE_RESULT': return update(state, {
       autocompleteResults: { $set: action.results },

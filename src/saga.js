@@ -178,6 +178,7 @@ function* saveState(localStorage): any {
     currentDeckId: _.currentDeckId,
     filters: _.filters,
     sorting: _.sorting,
+    sortingThenBys: _.sortingThenBys,
     pools: _.pools,
   }));
   yield call([localStorage, 'setItem'], 'state', JSON.stringify(state));
@@ -227,6 +228,8 @@ export default function*(): any {
       'REMOVE_CARD_INSTANCE_FROM_DECK',
       'SET_FILTERS',
       'SET_SORTING',
+      'ADD_SORTING_THEN_BY',
+      'REMOVE_LAST_SORTING_THEN_BY',
       'SET_CURRENT_DECK',
       'ADD_AND_SWITCH_TO_DECK',
       'RENAME_DECK',

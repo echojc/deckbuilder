@@ -2,6 +2,7 @@
 
 import { createSelector } from 'reselect';
 import { toCockatriceFormat, asDataUrl } from './export';
+import { sortComparator } from './sort';
 import type { CardData } from './saga';
 //import type { GlobalState } from './state';
 
@@ -11,6 +12,7 @@ const currentDeckId = state => state.currentDeckId;
 const cardCache = state => state.cardCache;
 const filters = state => state.filters;
 const sorting = state => state.sorting;
+const sortingThenBys = state => state.sortingThenBys;
 const previewCardName = state => state.previewCardName;
 
 const pool = createSelector(
@@ -78,37 +80,9 @@ export const poolCards = createSelector(
       }))
 );
 
-const rarityOrder = {
-  common: 0,
-  uncommon: 10,
-  rare: 20,
-  mythic: 30,
-};
-const sortingFuncs: { [by: string]: { asc: (a: CardDataInstance, b: CardDataInstance) => number, desc: (a: CardDataInstance, b: CardDataInstance) => number } } = {
-  name: {
-    asc: (a, b) => a.card.name.localeCompare(b.card.name),
-    desc: (a, b) => b.card.name.localeCompare(a.card.name),
-  },
-  cmc: {
-    asc: (a, b) => a.card.cmc - b.card.cmc,
-    desc: (a, b) => b.card.cmc - a.card.cmc,
-  },
-  power: {
-    asc: (a, b) => (parseInt(a.card.power, 10) || 0) - (parseInt(b.card.power, 10) || 0),
-    desc: (a, b) => (parseInt(b.card.power, 10) || 0) - (parseInt(a.card.power, 10) || 0),
-  },
-  toughness: {
-    asc: (a, b) => (parseInt(a.card.toughness, 10) || 0) - (parseInt(b.card.toughness, 10) || 0),
-    desc: (a, b) => (parseInt(b.card.toughness, 10) || 0) - (parseInt(a.card.toughness, 10) || 0),
-  },
-  rarity: {
-    asc: (a, b) => rarityOrder[a.card.rarity] - rarityOrder[b.card.rarity],
-    desc: (a, b) => rarityOrder[b.card.rarity] - rarityOrder[a.card.rarity],
-  },
-};
 export const filteredPoolCards = createSelector(
-  [poolCards, filters, sorting],
-  (poolCards, filters, sorting) => {
+  [poolCards, filters, sorting, sortingThenBys],
+  (poolCards, filters, sorting, sortingThenBys) => {
     let cards = poolCards.slice();
     if (filters.cmcs.length > 0) {
       cards = cards.filter(_ => _.card.cmc && filters.cmcs.includes(_.card.cmc.toString()));
@@ -134,7 +108,7 @@ export const filteredPoolCards = createSelector(
         (_.card.name && _.card.name.toLowerCase().includes(lowered))
       ));
     }
-    return cards.sort(sortingFuncs[sorting.by][sorting.direction]);
+    return cards.sort(sortComparator(sorting, sortingThenBys));
   },
 );
 
