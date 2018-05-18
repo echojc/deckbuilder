@@ -18,16 +18,19 @@ type Props = {
 function renderCheckboxes(options: string[], selected: string[], onChange: (vs: string[]) => void): React$Node {
   return (
     <span>
-      {options.map(option => (
-        <label key={option}>
-          <input
-            type="checkbox"
-            checked={selected.includes(option)}
-            onChange={() => onChange(selected.includes(option) ? selected.filter(_ => _ !== option) : selected.concat(option))}
-          />
-          {option}
-        </label>
-      ))}
+      {options.map(option => {
+        const isSelected = selected.includes(option);
+        return (
+          <label key={option} className={`Filter-option Filter-option-${isSelected ? 'selected' : 'deselected'}`}>
+            <input
+              type="checkbox"
+              checked={isSelected}
+              onChange={() => onChange(isSelected ? selected.filter(_ => _ !== option) : selected.concat(option))}
+            />
+            {option}
+          </label>
+        );
+      })}
     </span>
   );
 }

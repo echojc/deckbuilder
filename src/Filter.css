@@ -3,3 +3,22 @@
   margin-left: 0.5rem;
   padding-left: 0.5rem;
 }
+
+.Filter-option > input {
+  display: none;
+}
+
+.Filter-option {
+  margin: 0 0.25rem;
+  text-decoration: underline;
+  cursor: pointer;
+  user-select: none;
+}
+
+.Filter-option-selected {
+  font-weight: bolder;
+}
+
+.Filter-option-deselected {
+  color: #999;
+}
