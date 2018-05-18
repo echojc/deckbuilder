@@ -118,7 +118,7 @@ function* autocomplete(localStorage, action: AutocompleteRequest): any {
     // fetch online results
     const results = yield call(scry.autocomplete, partial);
     if (isOffline) {
-      yield put(setOffline(true));
+      yield put(setOffline(false));
     }
 
     // try save to known cards in local storage (for offline)
