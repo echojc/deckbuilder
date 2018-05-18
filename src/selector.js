@@ -51,16 +51,18 @@ export const deckCards = createSelector(
       .filter(_ => _.card)
 );
 
-export const deckCardsByCmcSorted = createSelector(
+export const deckCardsGroupedByLandCmc = createSelector(
   [deckCards],
   (deckCards) => {
     const result = {};
     // group by cmc
     for (const cardInstance of deckCards) {
-      if (result[cardInstance.card.cmc]) {
-        result[cardInstance.card.cmc].push(cardInstance);
+      if (cardInstance.card.cmc == null || cardInstance.card.typeLine == null) continue;
+      const group = cardInstance.card.typeLine.includes('Land') ? 'land' : cardInstance.card.cmc.toString();
+      if (result[group]) {
+        result[group].push(cardInstance);
       } else {
-        result[cardInstance.card.cmc] = [cardInstance];
+        result[group] = [cardInstance];
       }
     }
     // sort by name

@@ -2,7 +2,7 @@
 
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { deckCardsByCmcSorted } from './selector';
+import { deckCardsGroupedByLandCmc } from './selector';
 import { removeCardInstanceFromDeck } from './state';
 import Card from './Card';
 import DeckPicker from './DeckPicker';
@@ -13,43 +13,57 @@ import type { GlobalState } from './state';
 import type { CardDataInstance } from './selector';
 
 type Props = {
-  deckByCmc: { [cmc: string]: CardDataInstance[] },
+  deckCardsGrouped: { [group: string]: CardDataInstance[] },
   highlightCardType: ?string,
   removeCardInstanceFromDeck: (name: string) => void,
 };
 
-const Deck = ({ deckByCmc, highlightCardType, removeCardInstanceFromDeck }: Props) =>
-  <div className="Deck">
-    Deck
-    <DeckPicker />
-    <DeckCounts />
-    <Exporter />
-    <div className="Deck-cards">
-      {Object.keys(deckByCmc).map(cmc => (
-        <div key={cmc} className="Deck-card-group">
-          {deckByCmc[cmc].map(card => (
+class Deck extends Component<Props> {
+  renderCardGroup(groupName: string) {
+    const { deckCardsGrouped, highlightCardType, removeCardInstanceFromDeck } = this.props;
+    return (
+      <div key={groupName} className="Deck-card-group">
+        {deckCardsGrouped[groupName].map(card => (
+          <div
+            key={card.instanceId}
+            className="Deck-card"
+            onClick={() => removeCardInstanceFromDeck(card.instanceId)}
+          >
+            <Card card={card.card} size="small" />
+            {/* partially block out the card if NOT highlighting its card type */}
             <div
-              key={card.instanceId}
-              className="Deck-card"
-              onClick={() => removeCardInstanceFromDeck(card.instanceId)}
-            >
-              <Card card={card.card} size="small" />
-              {/* partially block out the card if NOT highlighting its card type */}
-              <div
-                className="Deck-card-overlay"
-                style={{ opacity: highlightCardType && (!card.card.typeLine || !card.card.typeLine.includes(highlightCardType)) ? 0.5 : 0}}
-              />
-            </div>
-          ))}
+              className="Deck-card-overlay"
+              style={{
+                opacity: highlightCardType && (!card.card.typeLine || !card.card.typeLine.includes(highlightCardType)) ? 0.5 : 0,
+              }}
+            />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  render() {
+    const { deckCardsGrouped, highlightCardType, removeCardInstanceFromDeck } = this.props;
+    const cardGroupOrder = Object.keys(deckCardsGrouped).filter(_ => _ !== 'land').sort();
+    return (
+      <div className="Deck">
+        Deck
+        <DeckPicker />
+        <DeckCounts />
+        <Exporter />
+        <div className="Deck-cards">
+          {deckCardsGrouped['land'] && this.renderCardGroup('land')}
+          {cardGroupOrder.map(groupName => this.renderCardGroup(groupName))}
         </div>
-      ))}
-    </div>
-  </div>
-;
+      </div>
+    );
+  }
+}
 
 export default connect(
   (state: GlobalState) => ({
-    deckByCmc: deckCardsByCmcSorted(state),
+    deckCardsGrouped: deckCardsGroupedByLandCmc(state),
     highlightCardType: state.highlightCardType,
   }),
   (dispatch) => ({
