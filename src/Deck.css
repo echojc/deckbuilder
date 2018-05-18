@@ -4,8 +4,22 @@
   overflow: auto;
 }
 
+.Deck-card-group {
+  width: 146px;
+}
+
 .Deck-card-group + .Deck-card-group {
   margin-left: 0.5rem;
+}
+
+.Deck-nonlands {
+  margin-left: 0.5rem;
+  flex-grow: 1;
+}
+
+.Deck-split {
+  display: flex;
+  width: 100%;
 }
 
 .Deck-card {

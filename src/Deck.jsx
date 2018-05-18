@@ -18,43 +18,72 @@ type Props = {
   removeCardInstanceFromDeck: (name: string) => void,
 };
 
-class Deck extends Component<Props> {
-  renderCardGroup(groupName: string) {
-    const { deckCardsGrouped, highlightCardType, removeCardInstanceFromDeck } = this.props;
-    return (
-      <div key={groupName} className="Deck-card-group">
-        {deckCardsGrouped[groupName].map(card => (
+type State = {
+  isSplitCreatures: boolean,
+};
+
+function isType(cardInstance: CardDataInstance, type: string): boolean {
+  return (cardInstance.card.typeLine || '').includes(type);
+}
+function isCreature(cardInstance: CardDataInstance): boolean {
+  return isType(cardInstance, 'Creature');
+}
+function isNonCreature(cardInstance: CardDataInstance): boolean {
+  return !isCreature(cardInstance);
+}
+
+class Deck extends Component<Props, State> {
+  state: State = {
+    isSplitCreatures: false,
+  };
+
+  renderCardGroup = (groupName: string, filter: (card: CardDataInstance) => boolean = () => true) => (
+    <div key={groupName} className="Deck-card-group">
+      {this.props.deckCardsGrouped[groupName].filter(filter).map(cardInstance => (
+        <div
+          key={cardInstance.instanceId}
+          className="Deck-card"
+          onClick={() => this.props.removeCardInstanceFromDeck(cardInstance.instanceId)}
+        >
+          <Card card={cardInstance.card} size="small" />
+          {/* partially block out the card if NOT highlighting its card type */}
           <div
-            key={card.instanceId}
-            className="Deck-card"
-            onClick={() => removeCardInstanceFromDeck(card.instanceId)}
-          >
-            <Card card={card.card} size="small" />
-            {/* partially block out the card if NOT highlighting its card type */}
-            <div
-              className="Deck-card-overlay"
-              style={{
-                opacity: highlightCardType && (!card.card.typeLine || !card.card.typeLine.includes(highlightCardType)) ? 0.5 : 0,
-              }}
-            />
-          </div>
-        ))}
-      </div>
-    );
-  }
+            className="Deck-card-overlay"
+            style={{ opacity: this.props.highlightCardType && !isType(cardInstance, this.props.highlightCardType) ? 0.5 : 0 }}
+          />
+        </div>
+      ))}
+    </div>
+  );
 
   render() {
-    const { deckCardsGrouped, highlightCardType, removeCardInstanceFromDeck } = this.props;
-    const cardGroupOrder = Object.keys(deckCardsGrouped).filter(_ => _ !== 'land').sort();
+    const cardGroupOrder = Object.keys(this.props.deckCardsGrouped).filter(_ => _ !== 'land').sort();
+    const splitGroupFilters = this.state.isSplitCreatures
+      ? [isCreature, isNonCreature]
+      : [() => true];
     return (
       <div className="Deck">
         Deck
         <DeckPicker />
         <DeckCounts />
+        <label>
+          <input
+            type="checkbox"
+            value={this.state.isSplitCreatures}
+            onChange={() => this.setState({ isSplitCreatures: !this.state.isSplitCreatures })}
+          />
+          Split creatures
+        </label>
         <Exporter />
         <div className="Deck-cards">
-          {deckCardsGrouped['land'] && this.renderCardGroup('land')}
-          {cardGroupOrder.map(groupName => this.renderCardGroup(groupName))}
+          {this.props.deckCardsGrouped['land'] && this.renderCardGroup('land')}
+          <div className="Deck-nonlands">
+            {splitGroupFilters.map(filter => (
+              <div key={filter.name} className="Deck-split">
+                {cardGroupOrder.map(groupName => this.renderCardGroup(groupName, filter))}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );
