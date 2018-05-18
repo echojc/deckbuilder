@@ -6,7 +6,7 @@
   display: flex;
 }
 
-.App-workspace-cards {
+.App-workspace-main {
   overflow: hidden;
   flex-grow: 1;
 }

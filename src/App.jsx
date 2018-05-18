@@ -10,6 +10,7 @@ import Search from './Search';
 import Filter from './Filter';
 import Sorting from './Sorting';
 import Preview from './Preview';
+import Changelog from './Changelog';
 import './App.css';
 
 import type { GlobalState } from './state';
@@ -25,9 +26,10 @@ const App = ({ isOffline }: Props) =>
     <Filter />
     <Sorting />
     <div className="App-workspace">
-      <div className="App-workspace-cards">
+      <div className="App-workspace-main">
         <Pool />
         <Deck />
+        <Changelog />
       </div>
       <Preview />
     </div>
