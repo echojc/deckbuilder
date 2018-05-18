@@ -11,8 +11,6 @@
 .Filter-option {
   margin: 0 0.25rem;
   text-decoration: underline;
-  cursor: pointer;
-  user-select: none;
 }
 
 .Filter-option-selected {
