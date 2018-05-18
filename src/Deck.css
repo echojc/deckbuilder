@@ -22,6 +22,10 @@
   width: 100%;
 }
 
+.Deck-split + .Deck-split {
+  margin-top: 1rem;
+}
+
 .Deck-card {
   position: relative;
   cursor: pointer;
