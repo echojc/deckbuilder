@@ -146,6 +146,9 @@ export const addAndSwitchToDeck = (name?: string): AddAndSwitchToDeck => ({ type
 export type RenameDeck = { type: 'RENAME_DECK', id: string, newName: string };
 export const renameDeck = (id: string, newName: string): RenameDeck => ({ type: 'RENAME_DECK', id, newName });
 
+export type DeleteDeck = { type: 'DELETE_DECK', id: string };
+export const deleteDeck = (id: string): DeleteDeck => ({ type: 'DELETE_DECK', id });
+
 export type SetPreviewCardName = { type: 'SET_PREVIEW_CARD_NAME', cardName: ?string };
 export const setPreviewCardName = (cardName: ?string): SetPreviewCardName => ({ type: 'SET_PREVIEW_CARD_NAME', cardName });
 
@@ -169,6 +172,7 @@ export type Action =
   SetCurrentDeck |
   AddAndSwitchToDeck |
   RenameDeck |
+  DeleteDeck |
   SetPreviewCardName |
   SetHighlightCardType;
 export default (state: GlobalState = defaultState, action: Action): GlobalState => {
@@ -284,6 +288,36 @@ export default (state: GlobalState = defaultState, action: Action): GlobalState 
         },
       },
     });
+    case 'DELETE_DECK': {
+      // ensure there's at least one deck in the state
+      const deckIds = Object.keys(state.pools[state.currentPoolId].decks);
+      if (deckIds.length === 1) {
+        return update(state, {
+          currentDeckId: { $set: 'default' },
+          pools: {
+            [state.currentPoolId]: {
+              decks: { $set: {
+                default: newDeck('default', 'default'),
+              }},
+            },
+          },
+        });
+      } else {
+        // switch deck id to next deck, or if this is the last deck then the previous one
+        let newIndex = deckIds.indexOf(action.id) + 1;
+        if (newIndex === deckIds.length) {
+          newIndex -= 2;
+        }
+        return update(state, {
+          currentDeckId: { $set: deckIds[newIndex] },
+          pools: {
+            [state.currentPoolId]: {
+              decks: { $unset: [action.id] },
+            },
+          },
+        });
+      }
+    }
     case 'SET_PREVIEW_CARD_NAME': return update(state, {
       previewCardName: { $set: action.cardName },
     });
