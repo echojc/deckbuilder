@@ -6,7 +6,6 @@ import { connect } from 'react-redux';
 
 import Pool from './Pool';
 import Deck from './Deck';
-import Search from './Search';
 import Filter from './Filter';
 import Sorting from './Sorting';
 import Preview from './Preview';
@@ -22,7 +21,6 @@ type Props = {
 const App = ({ isOffline }: Props) =>
   <div className="App">
     {isOffline && <div className="App-offline">Offline</div>}
-    <Search />
     <Filter />
     <Sorting />
     <div className="App-workspace">

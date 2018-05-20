@@ -38,7 +38,7 @@ class Search extends Component<Props, State> {
 
   render() {
     return (
-      <div className="Search">
+      <span className="Search">
         Add card to pool:
         <input
           ref={e => this.inputEl = e}
@@ -51,7 +51,7 @@ class Search extends Component<Props, State> {
         <datalist id="list">
           {this.props.autocompleteResults.map(n => <option key={n}>{n}</option>)}
         </datalist>
-      </div>
+      </span>
     );
   }
 }

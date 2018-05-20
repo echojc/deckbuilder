@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { poolCards, filteredPoolCards } from './selector';
 import { addCardInstanceToDeck, removeCardInstanceFromPool } from './state';
 import PoolPicker from './PoolPicker';
+import Search from './Search';
 import Card from './Card';
 import './Pool.css';
 import type { GlobalState } from './state';
@@ -21,6 +22,7 @@ const Pool = ({ poolSize, filteredPool, addCardInstanceToDeck, removeCardInstanc
   <div className="Pool">
     Pool
     <PoolPicker />
+    <Search />
     (showing {filteredPool.length} of {poolSize}):
     <div className="Pool-cards">
       {filteredPool.map(card => (
