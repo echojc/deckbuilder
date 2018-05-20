@@ -233,6 +233,7 @@ export default function*(): any {
       'SET_CURRENT_DECK',
       'ADD_AND_SWITCH_TO_DECK',
       'RENAME_DECK',
+      'DUPLICATE_DECK',
     ], saveState, window.localStorage),
   ]);
 }

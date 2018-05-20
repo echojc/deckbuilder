@@ -146,6 +146,9 @@ export const addAndSwitchToDeck = (name?: string): AddAndSwitchToDeck => ({ type
 export type RenameDeck = { type: 'RENAME_DECK', id: string, newName: string };
 export const renameDeck = (id: string, newName: string): RenameDeck => ({ type: 'RENAME_DECK', id, newName });
 
+export type DuplicateDeck = { type: 'DUPLICATE_DECK', id: string };
+export const duplicateDeck = (id: string): DuplicateDeck => ({ type: 'DUPLICATE_DECK', id });
+
 export type SetPreviewCardName = { type: 'SET_PREVIEW_CARD_NAME', cardName: ?string };
 export const setPreviewCardName = (cardName: ?string): SetPreviewCardName => ({ type: 'SET_PREVIEW_CARD_NAME', cardName });
 
@@ -169,6 +172,7 @@ export type Action =
   SetCurrentDeck |
   AddAndSwitchToDeck |
   RenameDeck |
+  DuplicateDeck |
   SetPreviewCardName |
   SetHighlightCardType;
 export default (state: GlobalState = defaultState, action: Action): GlobalState => {
@@ -284,6 +288,22 @@ export default (state: GlobalState = defaultState, action: Action): GlobalState 
         },
       },
     });
+    case 'DUPLICATE_DECK': {
+      const newId = uuidv4();
+      const targetDeck = state.pools[state.currentPoolId].decks[action.id];
+      const copiedDeck = update(targetDeck, {
+        id: { $set: newId },
+        name: { $set: `Copy of ${targetDeck.name}` },
+      });
+      return update(state, {
+        currentDeckId: { $set: newId },
+        pools: {
+          [state.currentPoolId]: {
+            decks: { $merge: { [newId]: copiedDeck } },
+          },
+        },
+      });
+    }
     case 'SET_PREVIEW_CARD_NAME': return update(state, {
       previewCardName: { $set: action.cardName },
     });
