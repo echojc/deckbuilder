@@ -284,13 +284,17 @@ export default (state: GlobalState = defaultState, action: Action): GlobalState 
     case 'SET_CURRENT_POOL': return update(state, {
       currentPoolId: { $set: action.id },
       currentDeckId: { $set: Object.keys(state.pools[action.id].decks)[0] },
+      filters: { $set: defaultFilters },
+      previewCardName: { $set: null },
     });
     case 'ADD_AND_SWITCH_TO_POOL': {
       const newId = uuidv4();
       return update(state, {
         currentPoolId: { $set: newId },
         currentDeckId: { $set: 'default' },
+        filters: { $set: defaultFilters },
         pools: { $merge: { [newId]: newPool(newId, action.name)} },
+        previewCardName: { $set: null },
       });
     }
     case 'RENAME_POOL': return update(state, {
