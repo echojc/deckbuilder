@@ -7,6 +7,9 @@ date_regex='[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}'
 # get all commit messages (first line only)
 git log --pretty="format:%h %cd %s" --date="format:%Y-%m-%d" ${earliest_changelog_commit}..master |\
 
+# ignore private commits
+grep -v '\[p\]' |\
+
 # replace newlines because we want builds to be referenced by the hash of the latest commit, not the newly generated one
 tr '\n' @ |\
 
