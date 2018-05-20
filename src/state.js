@@ -67,6 +67,7 @@ export type GlobalState = {
   filters: Filters,
   sorting: Sort,
   sortingThenBys: Sort[],
+  isSplitCreatures: boolean,
   pools: { [id: string]: Pool },
 
   isOffline: boolean,
@@ -87,6 +88,7 @@ const defaultState: GlobalState = {
     direction: 'asc',
   },
   sortingThenBys: [],
+  isSplitCreatures: false,
   pools: {
     default: newPool('default', 'default'),
   },
@@ -155,6 +157,9 @@ export const setPreviewCardName = (cardName: ?string): SetPreviewCardName => ({ 
 export type SetHighlightCardType = { type: 'SET_HIGHLIGHT_CARD_TYPE', cardType: ?string };
 export const setHighlightCardType = (cardType: ?string): SetHighlightCardType => ({ type: 'SET_HIGHLIGHT_CARD_TYPE', cardType });
 
+export type SetSplitCreatures = { type: 'SET_SPLIT_CREATURES', value: boolean };
+export const setSplitCreatures = (value: boolean): SetSplitCreatures => ({ type: 'SET_SPLIT_CREATURES', value });
+
 export type Action =
   MergeState |
   SetOffline |
@@ -174,7 +179,8 @@ export type Action =
   RenameDeck |
   DuplicateDeck |
   SetPreviewCardName |
-  SetHighlightCardType;
+  SetHighlightCardType |
+  SetSplitCreatures;
 export default (state: GlobalState = defaultState, action: Action): GlobalState => {
   switch (action.type) {
     case 'MERGE_STATE': return update(state, { $merge: action.state });
@@ -309,6 +315,9 @@ export default (state: GlobalState = defaultState, action: Action): GlobalState 
     });
     case 'SET_HIGHLIGHT_CARD_TYPE': return update(state, {
       highlightCardType: { $set: action.cardType },
+    });
+    case 'SET_SPLIT_CREATURES': return update(state, {
+      isSplitCreatures: { $set: action.value },
     });
     default: return state;
   }

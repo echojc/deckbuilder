@@ -179,6 +179,7 @@ function* saveState(localStorage): any {
     filters: _.filters,
     sorting: _.sorting,
     sortingThenBys: _.sortingThenBys,
+    isSplitCreatures: _.isSplitCreatures,
     pools: _.pools,
   }));
   yield call([localStorage, 'setItem'], 'state', JSON.stringify(state));
@@ -234,6 +235,7 @@ export default function*(): any {
       'ADD_AND_SWITCH_TO_DECK',
       'RENAME_DECK',
       'DUPLICATE_DECK',
+      'SET_SPLIT_CREATURES',
     ], saveState, window.localStorage),
   ]);
 }

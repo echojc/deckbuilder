@@ -3,7 +3,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { deckCardsGroupedByLandCmc } from './selector';
-import { removeCardInstanceFromDeck } from './state';
+import { removeCardInstanceFromDeck, setSplitCreatures } from './state';
 import Card from './Card';
 import DeckPicker from './DeckPicker';
 import DeckCounts from './DeckCounts';
@@ -15,11 +15,9 @@ import type { CardDataInstance } from './selector';
 type Props = {
   deckCardsGrouped: { [group: string]: CardDataInstance[] },
   highlightCardType: ?string,
-  removeCardInstanceFromDeck: (name: string) => void,
-};
-
-type State = {
   isSplitCreatures: boolean,
+  removeCardInstanceFromDeck: (name: string) => void,
+  setSplitCreatures: (value: boolean) => void,
 };
 
 function isType(cardInstance: CardDataInstance, type: string): boolean {
@@ -32,11 +30,7 @@ function isNonCreature(cardInstance: CardDataInstance): boolean {
   return !isCreature(cardInstance);
 }
 
-class Deck extends Component<Props, State> {
-  state: State = {
-    isSplitCreatures: false,
-  };
-
+class Deck extends Component<Props> {
   renderCardGroup = (groupName: string, filter: (card: CardDataInstance) => boolean = () => true) => (
     <div key={groupName} className="Deck-card-group">
       {this.props.deckCardsGrouped[groupName].filter(filter).map(cardInstance => (
@@ -58,7 +52,7 @@ class Deck extends Component<Props, State> {
 
   render() {
     const cardGroupOrder = Object.keys(this.props.deckCardsGrouped).filter(_ => _ !== 'land').sort();
-    const splitGroupFilters = this.state.isSplitCreatures
+    const splitGroupFilters = this.props.isSplitCreatures
       ? [isCreature, isNonCreature]
       : [() => true];
     return (
@@ -69,8 +63,8 @@ class Deck extends Component<Props, State> {
         <label>
           <input
             type="checkbox"
-            value={this.state.isSplitCreatures}
-            onChange={() => this.setState({ isSplitCreatures: !this.state.isSplitCreatures })}
+            checked={this.props.isSplitCreatures}
+            onChange={() => this.props.setSplitCreatures(!this.props.isSplitCreatures) }
           />
           Split creatures
         </label>
@@ -94,8 +88,10 @@ export default connect(
   (state: GlobalState) => ({
     deckCardsGrouped: deckCardsGroupedByLandCmc(state),
     highlightCardType: state.highlightCardType,
+    isSplitCreatures: state.isSplitCreatures,
   }),
   (dispatch) => ({
     removeCardInstanceFromDeck: (name: string) => dispatch(removeCardInstanceFromDeck(name)),
+    setSplitCreatures: (value: boolean) => dispatch(setSplitCreatures(value)),
   }),
 )(Deck);
