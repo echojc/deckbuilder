@@ -47,4 +47,5 @@
   height: 100%;
   background-color: #fff;
   pointer-events: none;
+  border-radius: 8px;
 }
