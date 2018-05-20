@@ -139,6 +139,15 @@ export const autocompleteRequest = (partial: string): AutocompleteRequest => ({ 
 export type AutocompleteResult = { type: 'AUTOCOMPLETE_RESULT', results: string[] };
 export const autocompleteResult = (results: string[]): AutocompleteResult => ({ type: 'AUTOCOMPLETE_RESULT', results });
 
+export type SetCurrentPool = { type: 'SET_CURRENT_POOL', id: string };
+export const setCurrentPool = (id: string): SetCurrentPool => ({ type: 'SET_CURRENT_POOL', id });
+
+export type AddAndSwitchToPool = { type: 'ADD_AND_SWITCH_TO_POOL', name?: string };
+export const addAndSwitchToPool = (name?: string): AddAndSwitchToPool => ({ type: 'ADD_AND_SWITCH_TO_POOL', name });
+
+export type RenamePool = { type: 'RENAME_POOL', id: string, newName: string };
+export const renamePool = (id: string, newName: string): RenamePool => ({ type: 'RENAME_POOL', id, newName });
+
 export type SetCurrentDeck = { type: 'SET_CURRENT_DECK', id: string };
 export const setCurrentDeck = (id: string): SetCurrentDeck => ({ type: 'SET_CURRENT_DECK', id });
 
@@ -174,6 +183,9 @@ export type Action =
   RemoveLastSortingThenBy |
   AutocompleteRequest |
   AutocompleteResult |
+  SetCurrentPool |
+  AddAndSwitchToPool |
+  RenamePool |
   SetCurrentDeck |
   AddAndSwitchToDeck |
   RenameDeck |
@@ -268,6 +280,25 @@ export default (state: GlobalState = defaultState, action: Action): GlobalState 
     });
     case 'AUTOCOMPLETE_RESULT': return update(state, {
       autocompleteResults: { $set: action.results },
+    });
+    case 'SET_CURRENT_POOL': return update(state, {
+      currentPoolId: { $set: action.id },
+      currentDeckId: { $set: Object.keys(state.pools[action.id].decks)[0] },
+    });
+    case 'ADD_AND_SWITCH_TO_POOL': {
+      const newId = uuidv4();
+      return update(state, {
+        currentPoolId: { $set: newId },
+        currentDeckId: { $set: 'default' },
+        pools: { $merge: { [newId]: newPool(newId, action.name)} },
+      });
+    }
+    case 'RENAME_POOL': return update(state, {
+      pools: {
+        [action.id]: {
+          name: { $set: action.newName },
+        },
+      },
     });
     case 'SET_CURRENT_DECK': return update(state, {
       currentDeckId: { $set: action.id },

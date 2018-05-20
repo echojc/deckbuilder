@@ -20,6 +20,15 @@ const pool = createSelector(
   (pools, currentPoolId) => pools[currentPoolId] || {},
 );
 
+export const availablePools = createSelector(
+  [pools],
+  (pools) => {
+    const result = {};
+    Object.keys(pools).forEach(poolId => result[poolId] = pools[poolId].name);
+    return result;
+  },
+);
+
 export const deck = createSelector(
   [pool, currentDeckId],
   (pool, currentDeckId) => pool.decks[currentDeckId] || {},

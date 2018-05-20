@@ -4,6 +4,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { poolCards, filteredPoolCards } from './selector';
 import { addCardInstanceToDeck, removeCardInstanceFromPool } from './state';
+import PoolPicker from './PoolPicker';
 import Card from './Card';
 import './Pool.css';
 import type { GlobalState } from './state';
@@ -18,7 +19,9 @@ type Props = {
 
 const Pool = ({ poolSize, filteredPool, addCardInstanceToDeck, removeCardInstanceFromPool }: Props) =>
   <div className="Pool">
-    Pool (showing {filteredPool.length} of {poolSize}):
+    Pool
+    <PoolPicker />
+    (showing {filteredPool.length} of {poolSize}):
     <div className="Pool-cards">
       {filteredPool.map(card => (
         <div
