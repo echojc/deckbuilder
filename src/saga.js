@@ -56,7 +56,7 @@ function* loadCardFromStorageOrDownload(localStorage, cardName: string): any {
       return;
     }
   } catch (e) {
-    console.group('ensureCached - save card data');
+    console.group('loadCardFromStorageOrDownload - save card data');
     console.error(e);
     console.groupEnd();
   }
@@ -86,7 +86,7 @@ function* loadCardFromStorageOrDownload(localStorage, cardName: string): any {
     yield put(cacheCard(cardName, cardData));
   } catch (e) {
     if (!isOffline) {
-      console.group('ensureCached - scry');
+      console.group('loadCardFromStorageOrDownload - scry');
       console.error(e);
       console.groupEnd();
     }

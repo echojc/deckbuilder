@@ -17,6 +17,5 @@ export async function named(exact: string): Promise<any> {
   const res = await fetch(`${base}/cards/named?exact=${exact}`);
   if (res.status === 404) throw new Error('card not found');
 
-  // the exported type has limited fields, but the data itself has all the fields
   return await res.json();
 }
