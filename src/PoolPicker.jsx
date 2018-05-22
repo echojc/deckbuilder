@@ -16,13 +16,17 @@ type Props = {
   renamePool: (id: string, newName: string) => void,
 };
 
+function removeExtraSpaces(s: string): string {
+  return s.replace(/\s+/g, ' ').trim();
+}
+
 const PoolPicker = ({ availablePools, currentPoolId, setCurrentPool, addAndSwitchToPool, renamePool }: Props) =>
   <span className="PoolPicker">
     <SelectWithRename
       options={availablePools}
       value={currentPoolId}
       onChange={newId => setCurrentPool(newId)}
-      onRename={(id, newName) => renamePool(id, newName)}
+      onRename={(id, newName) => renamePool(id, removeExtraSpaces(newName))}
     />
     <button onClick={() => addAndSwitchToPool() }>create new</button>
   </span>

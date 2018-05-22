@@ -17,13 +17,17 @@ type Props = {
   duplicateDeck: (id: string) => void,
 };
 
+function removeExtraSpaces(s: string): string {
+  return s.replace(/\s+/g, ' ').trim();
+}
+
 const DeckPicker = ({ availableDecks, currentDeckId, setCurrentDeck, addAndSwitchToDeck, renameDeck, duplicateDeck }: Props) =>
   <span className="DeckPicker">
     <SelectWithRename
       options={availableDecks}
       value={currentDeckId}
       onChange={newId => setCurrentDeck(newId)}
-      onRename={(id, newName) => renameDeck(id, newName)}
+      onRename={(id, newName) => renameDeck(id, removeExtraSpaces(newName))}
     />
     <button onClick={() => duplicateDeck(currentDeckId) }>duplicate</button>
     <button onClick={() => addAndSwitchToDeck() }>create new</button>
