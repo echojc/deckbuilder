@@ -21,7 +21,7 @@ type Props = {
 };
 
 function isType(cardInstance: CardDataInstance, type: string): boolean {
-  return (cardInstance.card.typeLine || '').includes(type);
+  return cardInstance.card.typeLine != null && cardInstance.card.typeLine.includes(type);
 }
 function isCreature(cardInstance: CardDataInstance): boolean {
   return isType(cardInstance, 'Creature');
