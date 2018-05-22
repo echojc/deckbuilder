@@ -15,7 +15,7 @@ const Exporter = ({ deckCount, deckName, exportCockatriceFormatBase64 }: Props) 
   <span className="Exporter">
     {deckCount === 0
       ? <button disabled={true}>export to cockatrice</button>
-      : <a href={exportCockatriceFormatBase64} download={`${deckName.replace(/\s/, '-')}.cod`}>
+      : <a href={exportCockatriceFormatBase64} download={`${deckName.replace(/\s+/g, '-')}.cod`}>
           <button>export to cockatrice</button>
         </a>
     }
