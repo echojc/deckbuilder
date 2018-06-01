@@ -19,3 +19,12 @@ export async function named(exact: string): Promise<any> {
 
   return await res.json();
 }
+
+export async function fuzzy(fuzzy: string): Promise<any> {
+  if (!fuzzy) throw new Error('card not found');
+
+  const res = await fetch(`${base}/cards/named?fuzzy=${fuzzy}`);
+  if (res.status === 404) throw new Error('card not found');
+
+  return await res.json();
+}
