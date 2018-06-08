@@ -33,3 +33,7 @@ declare module 'reselect' {
 declare module 'uuid/v4' {
   declare module.exports: any;
 }
+
+declare module 'shallowequal' {
+  declare module.exports: any;
+}
