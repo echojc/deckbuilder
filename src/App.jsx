@@ -4,38 +4,27 @@ import React, { Component } from 'react';
 import { hot } from 'react-hot-loader';
 import { connect } from 'react-redux';
 
-import Pool from './Pool';
-import Deck from './Deck';
-import Filter from './Filter';
-import Sorting from './Sorting';
-import Preview from './Preview';
-import Changelog from './Changelog';
+import Explorer from './Explorer';
+import Card from './Card';
 import './App.css';
 
 import type { GlobalState } from './state';
+import type { CardData } from './saga';
 
 type Props = {
-  isOffline: boolean,
+  cardCache: { [name: string]: $Shape<CardData> },
 };
 
-const App = ({ isOffline }: Props) =>
+const App = ({ cardCache }: Props) =>
   <div className="App">
-    {isOffline && <div className="App-offline">Offline</div>}
-    <Filter />
-    <Sorting />
-    <div className="App-workspace">
-      <div className="App-workspace-main">
-        <Pool />
-        <Deck />
-        <Changelog />
-      </div>
-      <Preview />
-    </div>
+    <Explorer itemWidth={146} itemHeight={204} minGutterWidth={16} gutterHeight={16}>
+      {Object.keys(cardCache).map(name => <Card key={name} card={cardCache[name]} size="small" />)}
+    </Explorer>
   </div>
 ;
 
 export default hot(module)(connect(
   (state: GlobalState) => ({
-    isOffline: state.isOffline,
+    cardCache: state.cardCache,
   }),
 )(App));
