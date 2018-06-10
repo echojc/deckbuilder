@@ -1,13 +1,33 @@
+:root {
+  --color-primary: #2b8bff;
+  --color-bg: #f7f7f7;
+
+  --color-black: #000;
+  --color-dark: #1b2737;
+  --color-medium: #8d939b;
+  --color-light: #ccc;
+  --color-white: #fff;
+
+  --font-stack: "Lucida Grande";
+  --font-size: 13px;
+  --font-line-height: calc(16px / 13px);
+}
+
 html {
-  font-size: 16px;
+  font-family: var(--font-stack);
+  line-height: var(--font-line-height);
+  color: var(--color-dark);
+  background-color: var(--color-bg);
   height: 100%;
+
+  /* set rem to 16px */
+  font-size: 16px;
 }
 
 body {
   margin: 0;
   padding: 0;
-  font-family: sans-serif;
-  font-size: 13px;
+  font-size: var(--font-size);
   height: 100%;
 }
 
@@ -18,4 +38,32 @@ body {
 label {
   user-select: none;
   cursor: pointer;
+}
+
+button {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  width: 12rem;
+  height: 3rem;
+  outline: none;
+  border: none;
+  appearance: none;
+  margin: 0;
+  padding: 0 1rem;
+  box-sizing: border-box;
+  box-shadow: none;
+}
+
+input {
+  font-family: var(--font-stack) !important;
+  font-size: var(--font-size) !important;
+  line-height: var(--font-line-height) !important;
+  color: var(--color-dark) !important;
+  outline: none;
+  border: none;
+  appearance: none;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  box-shadow: none;
 }
