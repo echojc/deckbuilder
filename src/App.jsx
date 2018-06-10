@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 
 import Explorer from './Explorer';
 import Card from './Card';
+import CardSearch from './CardSearch';
 import './App.css';
 
 import type { GlobalState } from './state';
@@ -20,6 +21,7 @@ const App = ({ cardCache }: Props) =>
     <Explorer itemWidth={146} itemHeight={204} minGutterWidth={16} gutterHeight={16}>
       {Object.keys(cardCache).map(name => <Card key={name} card={cardCache[name]} size="small" />)}
     </Explorer>
+    <CardSearch />
   </div>
 ;
 

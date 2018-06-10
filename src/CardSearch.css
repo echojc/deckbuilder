@@ -1,0 +1,105 @@
+.CardSearch {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-bg);
+  display: flex;
+  flex-direction: column;
+}
+
+.CardSearch-header {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  height: 4rem;
+  background-color: var(--color-white);
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--color-light);
+  box-shadow: 0 1px 3px var(--color-light);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.CardSearch-back {
+  flex-shrink: 0;
+  /* right padding is ever so slightly smaller to give header more space */
+  padding: 1rem 0.75rem 1rem 1rem;
+  width: 3.75rem;
+  height: 4rem;
+  box-sizing: border-box;
+  stroke: var(--color-primary);
+}
+
+.CardSearch-typeahead {
+  /* this is the element that needs to take up all available space */
+  flex-grow: 1;
+  flex-shrink: 1;
+  width: 100%;
+  line-height: 4rem;
+}
+
+.CardSearch-helptext {
+  color: var(--color-medium);
+  margin-left: 0.5rem;
+  margin-right: 0.75rem;
+  flex-shrink: 10;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: flex-shrink 0.3s ease-in;
+}
+
+.CardSearch-helptext.show {
+  flex-shrink: 0;
+  transition: flex-shrink 0.3s ease-out;
+}
+
+.CardSearch-add {
+  flex-shrink: 0;
+  width: 4rem;
+  height: 4rem;
+  padding: 1rem;
+  box-sizing: border-box;
+  box-shadow: -1px 0 3px var(--color-primary);
+  background-color: var(--color-primary);
+  stroke: var(--color-white);
+}
+
+.CardSearch-results {
+  height: 100%;
+  overflow: auto;
+  user-select: none;
+}
+
+.CardSearch-noresults {
+  margin: 3rem 2rem;
+  color: var(--color-medium);
+  text-align: center;
+}
+
+.CardSearch-result {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  height: 3rem;
+  line-height: 3rem;
+  padding: 0 1rem;
+  background-color: var(--color-white);
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--color-light);
+}
+
+.CardSearch-result-primary {
+  color: var(--color-dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.CardSearch-result-secondary {
+  color: var(--color-medium);
+  flex-shrink: 0;
+  margin-left: 0.5rem;
+}
