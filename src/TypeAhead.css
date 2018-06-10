@@ -1,0 +1,28 @@
+.TypeAhead {
+  position: relative;
+  overflow: hidden;
+  line-height: inherit;
+}
+
+.TypeAhead-input {
+  background-color: transparent;
+  width: 100%;
+}
+
+.TypeAhead-input::placeholder {
+  color: var(--color-light);
+}
+
+.TypeAhead-shadow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: var(--color-light);
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+}
+
+.TypeAhead-spacer {
+  color: transparent;
+}
