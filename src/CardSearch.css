@@ -65,6 +65,12 @@
   box-shadow: -1px 0 3px var(--color-primary);
   background-color: var(--color-primary);
   stroke: var(--color-white);
+  transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.CardSearch-add.disabled {
+  background-color: var(--color-light);
+  box-shadow: -1px 0 3px var(--color-light);
 }
 
 .CardSearch-results {

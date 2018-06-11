@@ -10,7 +10,7 @@ import TypeAhead from './TypeAhead';
 import { IconBack, IconPlus, IconLoading } from './svg';
 import './CardSearch.css';
 
-import { autocompleteRequest } from './state';
+import { autocompleteRequest, addCardToPool } from './state';
 import type { GlobalState } from './state';
 
 type Props = {
@@ -21,11 +21,15 @@ type Props = {
 
 type State = {
   input: string,
+  lastAddedCard: string,
+  lastAddedQuantity: number,
 };
 
 class CardSearch extends Component<Props, State> {
   state: State = {
     input: '',
+    lastAddedCard: '',
+    lastAddedQuantity: 0,
   };
 
   search = debounce(partial => this.props.autocompleteRequest(partial), 250);
@@ -46,10 +50,30 @@ class CardSearch extends Component<Props, State> {
     return suggestion.substring(input.length);
   }
 
+  hasResults = () => {
+    const { isSearching, autocompleteResults } = this.props;
+    const { input } = this.state;
+    return !isSearching && !this.search.isQueued() && autocompleteResults.length > 1;
+  }
+
   hasNoResults = () => {
     const { isSearching, autocompleteResults } = this.props;
     const { input } = this.state;
     return !isSearching && !this.search.isQueued() && input.length >= 2 && autocompleteResults.length === 0;
+  }
+
+  hasAddableSuggestion = () => {
+    return this.suggestedEnding() != null;
+  }
+
+  addSuggestion() {
+    const suggestion = this.props.autocompleteResults[0];
+    const { lastAddedCard, lastAddedQuantity } = this.state;
+    this.setState({
+      lastAddedCard: suggestion,
+      lastAddedQuantity: lastAddedCard === suggestion ? lastAddedQuantity + 1 : 1,
+    });
+    this.props.addCardToPool(suggestion);
   }
 
   render() {
@@ -58,26 +82,34 @@ class CardSearch extends Component<Props, State> {
         <div className="CardSearch-header">
           <IconBack
             className="CardSearch-back"
-            onClick={() => {/*TODO*/}}
+            onClick={() => {/* TODO */}}
           />
 
           <TypeAhead
             className="CardSearch-typeahead"
             value={this.state.input}
             onChange={input => { this.setState({ input }); this.search(input); }}
+            onEnter={() => this.hasAddableSuggestion() && this.addSuggestion()}
             placeholder="Enter the name of a card"
             suggestedEnding={this.suggestedEnding()}
           />
 
           <div
             className={cn('CardSearch-helptext', {
-              show: this.suggestedEnding() != null,
+              show: this.props.autocompleteResults.length > 0,
             })}
-          >Press ⏎ or</div>
+          >{(()=>{switch (true){
+            case this.hasAddableSuggestion():
+              return 'Press ⏎ or';
+            case this.hasResults():
+              return 'Select card below';
+          }})()}</div>
 
           <IconPlus
-            className="CardSearch-add"
-            onClick={() => {/*TODO*/}}
+            className={cn('CardSearch-add', {
+              disabled: !this.hasAddableSuggestion(),
+            })}
+            onClick={() => this.hasAddableSuggestion() && this.addSuggestion()}
           />
         </div>
 
@@ -104,7 +136,9 @@ class CardSearch extends Component<Props, State> {
                   style={{ transitionDelay: `${i*0.02}s` }}
                 >
                   <span className="CardSearch-result-primary">{cardName}</span>
-                  <span className="CardSearch-result-secondary"></span>
+                  <span className="CardSearch-result-secondary">
+                    {this.state.lastAddedCard === cardName && `Added ${this.state.lastAddedQuantity} copies!`}
+                  </span>
                 </div>
               </CSSTransition>
             ))}
@@ -122,5 +156,6 @@ export default connect(
   }),
   (dispatch) => ({
     autocompleteRequest: (partial: string) => dispatch(autocompleteRequest(partial)),
+    addCardToPool: (name: string) => dispatch(addCardToPool(name)),
   }),
 )(CardSearch);
