@@ -10,6 +10,7 @@ import TypeAhead from './TypeAhead';
 import { IconBack, IconPlus, IconLoading } from './svg';
 import './CardSearch.css';
 
+import { poolCardCounts } from './selector';
 import { autocompleteRequest, addCardToPool } from './state';
 import type { GlobalState } from './state';
 
@@ -17,6 +18,7 @@ type Props = {
   autocompleteResults: string[],
   autocompleteRequest: (partial: string) => void,
   isSearching: boolean,
+  poolCardCounts: { [cardName: string]: number },
 };
 
 type State = {
@@ -24,6 +26,10 @@ type State = {
   lastAddedCard: string,
   lastAddedQuantity: number,
 };
+
+function copies(n: number): string {
+  return n === 1 ? '1 copy' : `${n} copies`;
+}
 
 class CardSearch extends Component<Props, State> {
   resetLastAddedTimeout: ?number = null;
@@ -150,7 +156,10 @@ class CardSearch extends Component<Props, State> {
                 >
                   <span className="CardSearch-result-primary">{cardName}</span>
                   <span className="CardSearch-result-secondary">
-                    {this.state.lastAddedCard === cardName && `Added ${this.state.lastAddedQuantity} copies!`}
+                    {this.state.lastAddedCard === cardName
+                      ? `Added ${copies(this.state.lastAddedQuantity)}!`
+                      : this.props.poolCardCounts[cardName] && `You have ${copies(this.props.poolCardCounts[cardName])}`
+                    }
                   </span>
                 </div>
               </CSSTransition>
@@ -166,6 +175,7 @@ export default connect(
   (state: GlobalState) => ({
     autocompleteResults: state.autocompleteResults,
     isSearching: state.flags.isSearching,
+    poolCardCounts: poolCardCounts(state),
   }),
   (dispatch) => ({
     autocompleteRequest: (partial: string) => dispatch(autocompleteRequest(partial)),

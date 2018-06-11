@@ -91,6 +91,18 @@ export const poolCards = createSelector(
       }))
 );
 
+export const poolCardCounts = createSelector(
+  [poolCards],
+  (poolCards) => {
+    const result = {};
+    for (const cardInstance of poolCards) {
+      const cardName = cardInstance.card.name;
+      result[cardName] = (result[cardName] || 0) + 1;
+    }
+    return result;
+  },
+);
+
 export const filteredPoolCards = createSelector(
   [poolCards, filters, sorting, sortingThenBys],
   (poolCards, filters, sorting, sortingThenBys) => {
