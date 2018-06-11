@@ -26,6 +26,8 @@ type State = {
 };
 
 class CardSearch extends Component<Props, State> {
+  resetLastAddedTimeout: ?number = null;
+
   state: State = {
     input: '',
     lastAddedCard: '',
@@ -66,14 +68,25 @@ class CardSearch extends Component<Props, State> {
     return this.suggestedEnding() != null;
   }
 
-  addSuggestion() {
-    const suggestion = this.props.autocompleteResults[0];
+  addCard = (cardName: string) => {
     const { lastAddedCard, lastAddedQuantity } = this.state;
     this.setState({
-      lastAddedCard: suggestion,
-      lastAddedQuantity: lastAddedCard === suggestion ? lastAddedQuantity + 1 : 1,
+      lastAddedCard: cardName,
+      lastAddedQuantity: lastAddedCard === cardName ? lastAddedQuantity + 1 : 1,
     });
-    this.props.addCardToPool(suggestion);
+    this.props.addCardToPool(cardName);
+    // clear the lastAddedCard after some time
+    this.queueResetLastAddedTimeout();
+  }
+
+  queueResetLastAddedTimeout = () => {
+    if (this.resetLastAddedTimeout !== null) {
+      clearTimeout(this.resetLastAddedTimeout);
+    }
+    this.resetLastAddedTimeout = setTimeout(() => {
+      this.setState({ lastAddedCard: '', lastAddedQuantity: 0 });
+      this.resetLastAddedTimeout = null;
+    }, 3000);
   }
 
   render() {
@@ -89,7 +102,7 @@ class CardSearch extends Component<Props, State> {
             className="CardSearch-typeahead"
             value={this.state.input}
             onChange={input => { this.setState({ input }); this.search(input); }}
-            onEnter={() => this.hasAddableSuggestion() && this.addSuggestion()}
+            onEnter={() => this.hasAddableSuggestion() && this.addCard(this.props.autocompleteResults[0])}
             placeholder="Enter the name of a card"
             suggestedEnding={this.suggestedEnding()}
           />
@@ -109,7 +122,7 @@ class CardSearch extends Component<Props, State> {
             className={cn('CardSearch-add', {
               disabled: !this.hasAddableSuggestion(),
             })}
-            onClick={() => this.hasAddableSuggestion() && this.addSuggestion()}
+            onClick={() => this.hasAddableSuggestion() && this.addCard(this.props.autocompleteResults[0])}
           />
         </div>
 
@@ -132,7 +145,7 @@ class CardSearch extends Component<Props, State> {
               <CSSTransition key={cardName} classNames="CardSearch-result" timeout={1300}>
                 <div
                   className="CardSearch-result"
-                  onClick={() => {/*TODO*/}}
+                  onClick={() => this.addCard(cardName)}
                   style={{ transitionDelay: `${i*0.02}s` }}
                 >
                   <span className="CardSearch-result-primary">{cardName}</span>
