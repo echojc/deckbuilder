@@ -8,7 +8,7 @@
   --color-light: #ccc;
   --color-white: #fff;
 
-  --font-stack: "Lucida Grande";
+  --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   --font-size: 13px;
   --font-line-height: calc(16px / 13px);
 }
