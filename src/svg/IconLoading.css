@@ -1,0 +1,50 @@
+.IconLoading-s {
+  stroke-dasharray: 100;
+  animation: IconLoading-s 3.14s linear infinite, IconLoading-rotate 1.62s linear infinite;
+}
+
+.IconLoading-m {
+  stroke-dasharray: 150;
+  animation: IconLoading-m 1.62s linear infinite, IconLoading-rotate 3.14s linear infinite reverse;
+}
+
+.IconLoading-l {
+  stroke-dasharray: 200;
+  animation: IconLoading-l 3.67s linear infinite, IconLoading-rotate 2.19s linear infinite;
+}
+
+@keyframes IconLoading-s {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: 200;
+  }
+}
+
+@keyframes IconLoading-m {
+  from {
+    stroke-dashoffset: 300;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes IconLoading-l {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: 400;
+  }
+}
+
+@keyframes IconLoading-rotate {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}

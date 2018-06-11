@@ -6,7 +6,7 @@ import cn from 'classnames';
 import debounce from './debounce';
 
 import TypeAhead from './TypeAhead';
-import { IconBack, IconPlus } from './svg';
+import { IconBack, IconPlus, IconLoading } from './svg';
 import './CardSearch.css';
 
 import { autocompleteRequest } from './state';
@@ -51,6 +51,8 @@ class CardSearch extends Component<Props, State> {
     return !isSearching && !this.search.isQueued() && input.length >= 2 && autocompleteResults.length === 0;
   }
 
+  hasMinimumInputLength = () => this.state.input.length >= 2;
+
   render() {
     return (
       <div className="CardSearch">
@@ -81,6 +83,12 @@ class CardSearch extends Component<Props, State> {
         </div>
 
         <div className="CardSearch-results">
+          <IconLoading
+            className={cn('CardSearch-loading', {
+              show: this.props.isSearching,
+            })}
+          />
+
           {this.hasNoResults() && (
             <div className="CardSearch-noresults">
               No cards with that name found.<br />
@@ -88,7 +96,7 @@ class CardSearch extends Component<Props, State> {
             </div>
           )}
 
-          {this.state.input.length >= 2 && this.props.autocompleteResults.map(cardName => (
+          {this.hasMinimumInputLength() && this.props.autocompleteResults.map(cardName => (
             <div
               className="CardSearch-result"
               key={cardName}

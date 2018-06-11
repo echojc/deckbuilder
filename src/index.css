@@ -67,3 +67,7 @@ input {
   box-sizing: border-box;
   box-shadow: none;
 }
+
+svg {
+  display: block;
+}

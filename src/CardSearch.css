@@ -68,9 +68,26 @@
 }
 
 .CardSearch-results {
+  position: relative;
+  /* create a new stacking context to put the loading icon behind everything else in this div */
+  z-index: 0;
   height: 100%;
   overflow: auto;
   user-select: none;
+}
+
+.CardSearch-loading {
+  position: absolute;
+  top: 3rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.CardSearch-loading.show {
+  opacity: 1;
 }
 
 .CardSearch-noresults {
