@@ -41,3 +41,7 @@ declare module 'shallowequal' {
 declare module 'classnames' {
   declare module.exports: any;
 }
+
+declare module 'react-transition-group' {
+  declare module.exports: any;
+}

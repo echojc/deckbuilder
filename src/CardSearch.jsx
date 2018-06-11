@@ -2,6 +2,7 @@
 
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import cn from 'classnames';
 import debounce from './debounce';
 
@@ -51,8 +52,6 @@ class CardSearch extends Component<Props, State> {
     return !isSearching && !this.search.isQueued() && input.length >= 2 && autocompleteResults.length === 0;
   }
 
-  hasMinimumInputLength = () => this.state.input.length >= 2;
-
   render() {
     return (
       <div className="CardSearch">
@@ -96,16 +95,20 @@ class CardSearch extends Component<Props, State> {
             </div>
           )}
 
-          {this.hasMinimumInputLength() && this.props.autocompleteResults.map(cardName => (
-            <div
-              className="CardSearch-result"
-              key={cardName}
-              onClick={() => {/*TODO*/}}
-            >
-              <span className="CardSearch-result-primary">{cardName}</span>
-              <span className="CardSearch-result-secondary"></span>
-            </div>
-          ))}
+          <TransitionGroup>
+            {this.props.autocompleteResults.map((cardName, i) => (
+              <CSSTransition key={cardName} classNames="CardSearch-result" timeout={1300}>
+                <div
+                  className="CardSearch-result"
+                  onClick={() => {/*TODO*/}}
+                  style={{ transitionDelay: `${i*0.02}s` }}
+                >
+                  <span className="CardSearch-result-primary">{cardName}</span>
+                  <span className="CardSearch-result-secondary"></span>
+                </div>
+              </CSSTransition>
+            ))}
+          </TransitionGroup>
         </div>
       </div>
     );

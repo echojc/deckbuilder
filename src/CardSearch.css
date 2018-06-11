@@ -106,6 +106,30 @@
   background-color: var(--color-white);
   box-sizing: border-box;
   border-bottom: 1px solid var(--color-light);
+  overflow: hidden;
+}
+
+.CardSearch-result-enter {
+  transform: translateX(-4rem);
+  opacity: 0;
+}
+
+.CardSearch-result-enter-active {
+  transition: transform 0.3s ease-out, opacity 0.3s;
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.CardSearch-result-exit {
+  opacity: 1;
+  height: 3rem;
+}
+
+.CardSearch-result-exit-active {
+  transition: opacity 0.3s, height 0.3s ease-in;
+  opacity: 0;
+  height: 0;
+  border: none;
 }
 
 .CardSearch-result-primary {
