@@ -1,7 +1,7 @@
 // @flow
 
 import { takeEvery, takeLatest, select, put, call, all, spawn } from 'redux-saga/effects';
-import { autocompleteResult, cacheCard, setOffline, mergeState } from './state';
+import { autocompleteResult, cacheCard, setOffline, mergeState, setFlag } from './state';
 import { migrateState } from './migrate';
 import * as scry from './scry';
 import type { AutocompleteRequest, CacheCard, SetPreviewCardName } from './state';
@@ -116,7 +116,10 @@ function* autocomplete(localStorage, action: AutocompleteRequest): any {
   const isOffline = yield select(_ => _.isOffline);
   try {
     // fetch online results
+    yield put(setFlag('isSearching', true));
     const results = yield call(scry.autocomplete, partial);
+
+    // if we got to this point, we know we're online
     if (isOffline) {
       yield put(setOffline(false));
     }
@@ -167,6 +170,10 @@ function* autocomplete(localStorage, action: AutocompleteRequest): any {
       console.error(e);
       console.groupEnd();
       yield put(autocompleteResult([]));
+    }
+  } finally {
+    if (yield select(_ => _.flags.isSearching)) {
+      yield put(setFlag('isSearching', false));
     }
   }
 }

@@ -3,7 +3,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as scry from './scry';
-import debounce from 'debounce';
+import debounce from './debounce';
 import { addCardToPool, autocompleteRequest } from './state';
 import type { GlobalState } from './state';
 

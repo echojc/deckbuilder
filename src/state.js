@@ -60,6 +60,10 @@ function newPool(id?: string = uuidv4(), name?: string = 'new pool'): Pool {
   };
 }
 
+export type Flags = {
+  isSearching: boolean,
+};
+
 export type GlobalState = {
   _version: number,
   currentPoolId: string,
@@ -71,6 +75,7 @@ export type GlobalState = {
   pools: { [id: string]: Pool },
 
   isOffline: boolean,
+  flags: Flags,
   cardCache: { [name: string]: $Shape<CardData> },
   autocompleteResults: string[],
   previewCardName: ?string,
@@ -94,6 +99,9 @@ const defaultState: GlobalState = {
   },
 
   isOffline: false,
+  flags: {
+    isSearching: false,
+  },
   cardCache: {},
   autocompleteResults: [],
   previewCardName: null,
@@ -169,6 +177,9 @@ export const setHighlightCardType = (cardType: ?string): SetHighlightCardType =>
 export type SetSplitCreatures = { type: 'SET_SPLIT_CREATURES', value: boolean };
 export const setSplitCreatures = (value: boolean): SetSplitCreatures => ({ type: 'SET_SPLIT_CREATURES', value });
 
+export type SetFlag = { type: 'SET_FLAG', flag: $Keys<Flags>, value: boolean };
+export const setFlag = (flag: $Keys<Flags>, value: boolean): SetFlag => ({ type: 'SET_FLAG', flag, value });
+
 export type Action =
   MergeState |
   SetOffline |
@@ -192,7 +203,8 @@ export type Action =
   DuplicateDeck |
   SetPreviewCardName |
   SetHighlightCardType |
-  SetSplitCreatures;
+  SetSplitCreatures |
+  SetFlag;
 export default (state: GlobalState = defaultState, action: Action): GlobalState => {
   switch (action.type) {
     case 'MERGE_STATE': return update(state, { $merge: action.state });
@@ -353,6 +365,11 @@ export default (state: GlobalState = defaultState, action: Action): GlobalState 
     });
     case 'SET_SPLIT_CREATURES': return update(state, {
       isSplitCreatures: { $set: action.value },
+    });
+    case 'SET_FLAG': return update(state, {
+      flags: {
+        [action.flag]: { $set: action.value },
+      },
     });
     default: return state;
   }

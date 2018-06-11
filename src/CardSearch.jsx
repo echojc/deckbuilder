@@ -3,7 +3,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import cn from 'classnames';
-import debounce from 'debounce';
+import debounce from './debounce';
 
 import TypeAhead from './TypeAhead';
 import { IconBack, IconPlus } from './svg';
@@ -15,6 +15,7 @@ import type { GlobalState } from './state';
 type Props = {
   autocompleteResults: string[],
   autocompleteRequest: (partial: string) => void,
+  isSearching: boolean,
 };
 
 type State = {
@@ -42,6 +43,12 @@ class CardSearch extends Component<Props, State> {
 
     // otherwise the suggested ending is the rest of the first suggestion
     return suggestion.substring(input.length);
+  }
+
+  hasNoResults = () => {
+    const { isSearching, autocompleteResults } = this.props;
+    const { input } = this.state;
+    return !isSearching && !this.search.isQueued() && input.length >= 2 && autocompleteResults.length === 0;
   }
 
   render() {
@@ -74,7 +81,7 @@ class CardSearch extends Component<Props, State> {
         </div>
 
         <div className="CardSearch-results">
-          {this.state.input.length >= 2 && this.props.autocompleteResults.length === 0 && (
+          {this.hasNoResults() && (
             <div className="CardSearch-noresults">
               No cards with that name found.<br />
               Double check your spelling and make sure you're searching for the name of a card.
@@ -100,6 +107,7 @@ class CardSearch extends Component<Props, State> {
 export default connect(
   (state: GlobalState) => ({
     autocompleteResults: state.autocompleteResults,
+    isSearching: state.flags.isSearching,
   }),
   (dispatch) => ({
     autocompleteRequest: (partial: string) => dispatch(autocompleteRequest(partial)),
