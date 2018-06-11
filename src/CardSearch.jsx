@@ -16,9 +16,10 @@ import type { GlobalState } from './state';
 
 type Props = {
   autocompleteResults: string[],
-  autocompleteRequest: (partial: string) => void,
   isSearching: boolean,
   poolCardCounts: { [cardName: string]: number },
+  autocompleteRequest: (partial: string) => void,
+  addCardToPool: (cardName: string) => void,
 };
 
 type State = {
@@ -32,7 +33,8 @@ function copies(n: number): string {
 }
 
 class CardSearch extends Component<Props, State> {
-  resetLastAddedTimeout: ?number = null;
+  inputEl: ?HTMLInputElement = null;
+  resetLastAddedTimeout: ?TimeoutID = null;
 
   state: State = {
     input: '',
@@ -85,6 +87,14 @@ class CardSearch extends Component<Props, State> {
     this.queueResetLastAddedTimeout();
   }
 
+  addSuggestedCard = () => {
+    if (this.hasAddableSuggestion()) {
+      const suggestion = this.props.autocompleteResults[0];
+      this.addCard(suggestion);
+      requestAnimationFrame(() => this.inputEl && this.inputEl.select());
+    }
+  }
+
   queueResetLastAddedTimeout = () => {
     if (this.resetLastAddedTimeout !== null) {
       clearTimeout(this.resetLastAddedTimeout);
@@ -105,10 +115,12 @@ class CardSearch extends Component<Props, State> {
           />
 
           <TypeAhead
+            inputRef={el => this.inputEl = el}
             className="CardSearch-typeahead"
             value={this.state.input}
             onChange={input => { this.setState({ input }); this.search(input); }}
-            onEnter={() => this.hasAddableSuggestion() && this.addCard(this.props.autocompleteResults[0])}
+            onEnter={this.addSuggestedCard}
+            onFocus={() => this.inputEl && this.inputEl.select()}
             placeholder="Enter the name of a card"
             suggestedEnding={this.suggestedEnding()}
           />
@@ -128,7 +140,7 @@ class CardSearch extends Component<Props, State> {
             className={cn('CardSearch-add', {
               disabled: !this.hasAddableSuggestion(),
             })}
-            onClick={() => this.hasAddableSuggestion() && this.addCard(this.props.autocompleteResults[0])}
+            onClick={this.addSuggestedCard}
           />
         </div>
 
