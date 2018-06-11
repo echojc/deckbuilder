@@ -91,7 +91,7 @@ class CardSearch extends Component<Props, State> {
     if (this.hasAddableSuggestion()) {
       const suggestion = this.props.autocompleteResults[0];
       this.addCard(suggestion);
-      requestAnimationFrame(() => this.inputEl && this.inputEl.select());
+      this.inputSelectAll();
     }
   }
 
@@ -105,6 +105,13 @@ class CardSearch extends Component<Props, State> {
     }, 3000);
   }
 
+  inputSelectAll = () => {
+    requestAnimationFrame(() => {
+      if (!this.inputEl) return;
+      this.inputEl.select();
+    });
+  }
+
   render() {
     return (
       <div className="CardSearch">
@@ -115,12 +122,12 @@ class CardSearch extends Component<Props, State> {
           />
 
           <TypeAhead
-            inputRef={el => this.inputEl = el}
+            inputRef={el => { this.inputEl = el; }}
             className="CardSearch-typeahead"
             value={this.state.input}
             onChange={input => { this.setState({ input }); this.search(input); }}
             onEnter={this.addSuggestedCard}
-            onFocus={() => this.inputEl && this.inputEl.select()}
+            onFocus={() => this.inputSelectAll()}
             placeholder="Enter the name of a card"
             suggestedEnding={this.suggestedEnding()}
           />
