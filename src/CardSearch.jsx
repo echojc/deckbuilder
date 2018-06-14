@@ -20,6 +20,7 @@ type Props = {
   poolCardCounts: { [cardName: string]: number },
   autocompleteRequest: (partial: string) => void,
   addCardToPool: (cardName: string) => void,
+  history: any,
 };
 
 type State = {
@@ -118,7 +119,7 @@ class CardSearch extends Component<Props, State> {
         <div className="CardSearch-header">
           <IconBack
             className="CardSearch-back"
-            onClick={() => {/* TODO */}}
+            onClick={() => this.props.history.goBack()}
           />
 
           <TypeAhead

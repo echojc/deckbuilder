@@ -12,6 +12,7 @@ type Props = {
   minGutterWidth: number,
   gutterHeight: number,
   children: React$Node[],
+  history: any,
 };
 
 type State = {
@@ -165,7 +166,7 @@ class Explorer extends Component<Props, State> {
       <div
         className="Explorer"
         ref={this.handleRef}
-        onClick={() => this.setState({ mode: 'overview' })}
+        onClick={() => this.props.history.push('/search')/*this.setState({ mode: 'overview' })*/}
       >
         {React.Children.toArray(this.props.children).map((item, i) => {
           return (

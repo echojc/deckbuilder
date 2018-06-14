@@ -45,3 +45,11 @@ declare module 'classnames' {
 declare module 'react-transition-group' {
   declare module.exports: any;
 }
+
+declare module 'react-router' {
+  declare module.exports: any;
+}
+
+declare module 'history' {
+  declare module.exports: any;
+}
