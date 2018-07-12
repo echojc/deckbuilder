@@ -115,8 +115,9 @@ export const filteredPoolCards = createSelector(
     if (filters.text) {
       const lowered = filters.text.toLowerCase();
       cards = cards.filter(_ => (
-        (_.card.oracleText && _.card.oracleText.toLowerCase().includes(lowered)) ||
-        (_.card.name && _.card.name.toLowerCase().includes(lowered))
+        (_.card.oracleText && _.card.oracleText.toLowerCase().includes(lowered))
+        || (_.card.name && _.card.name.toLowerCase().includes(lowered))
+        || (_.card.typeLine && _.card.typeLine.toLowerCase().includes(lowered))
       ));
     }
     return cards.sort(sortComparator([sorting, ...sortingThenBys]));
